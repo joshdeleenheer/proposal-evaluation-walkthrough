@@ -27,6 +27,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.screen{animation:none}}
 body{
   font-family:'Newsreader',Georgia,serif;
   background:var(--paper);
@@ -104,6 +105,19 @@ body{
 .opt .olabel{font-weight:600;font-size:17.5px;color:var(--ink);margin-bottom:2px}
 .opt .odesc{font-size:15px;color:var(--ink-soft);line-height:1.45}
 
+/* ---- status-option group (D3/D9; A5) ----
+   The "non-answer" status options (No offer made / Not discussed yet / Not sure,
+   and N/A where it fits) render as a visually distinct group BENEATH the
+   substantive answers — same pick→RULES→flag machinery, lighter styling so they
+   read as a separate, secondary band. */
+.opts-status{display:grid;gap:10px;margin-top:16px;padding-top:16px;border-top:1.5px dashed var(--line)}
+.opts-status .status-label{font-family:'Fraunces',serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--ink-soft);margin-bottom:2px}
+.opt.status{padding:12px 18px;background:transparent;border-style:dashed}
+.opt.status .olabel{font-size:16px;font-weight:600;color:var(--ink-soft)}
+.opt.status.sel .olabel{color:var(--ink)}
+.opt.status .odesc{font-size:14px}
+.opt.status .dot{width:18px;min-width:18px;height:18px}
+
 /* ---- glossary popover ---- */
 .gloss{position:fixed;z-index:60;max-width:300px;background:var(--ink);color:var(--paper);padding:13px 16px;border-radius:5px;font-size:14.5px;line-height:1.5;box-shadow:0 10px 30px rgba(0,0,0,.3);display:none;font-family:'Newsreader',serif}
 .gloss .gterm{font-family:'Fraunces',serif;font-weight:600;color:var(--gold);display:block;margin-bottom:3px;font-size:13px;letter-spacing:.04em;text-transform:uppercase}
@@ -119,6 +133,11 @@ body{
 .flag.strong{background:rgba(74,93,67,.16);color:var(--moss-deep)}
 .flag.watch{background:rgba(176,138,62,.18);color:#8a6a20}
 .flag.gap{background:rgba(143,63,44,.13);color:var(--rust)}
+.flag.na{background:var(--line-soft);color:var(--ink-soft)}
+/* N/A rows are excluded from scoring (D3/D9): render greyed and muted so they
+   read as "set aside, not counted" — never as a strength or a gap. */
+.sum-row.na{opacity:.62}
+.sum-row.na .sr-crit{color:var(--ink-soft)}
 .sum-row .sr-your{font-size:15px;color:var(--ink-soft);margin-bottom:8px}
 .sum-row .sr-your b{color:var(--ink);font-weight:600}
 .sum-row .sr-ask{font-size:15.5px;background:rgba(61,90,108,.07);border-left:3px solid var(--sky);padding:9px 14px;border-radius:2px}
@@ -126,6 +145,57 @@ body{
 
 .disclaim{border:1.5px dashed var(--clay);padding:16px 20px;margin:28px 0;font-size:15px;color:var(--ink-soft);border-radius:3px;background:rgba(156,90,54,.04)}
 .disclaim strong{color:var(--rust);font-weight:600}
+
+/* ---- Goals scorecard axis (Phase 7; A8/D8/D10) ----
+   Sits above the per-question track blocks: for each of the 8 principles, the
+   proposal's evaluated band (worst-of its mapped questions) vs the Nation's
+   aspiration + minimum bands, shown as one of three results (above aspiration /
+   acceptable / below walk-away). Principles the tool's questions don't cover are
+   shown honestly as "not assessed". Custom goals are an unscored checklist. */
+.score-block{border:1.5px solid var(--ink);background:var(--paper-card);margin:22px 0;border-radius:3px;overflow:hidden}
+.score-block .sb-head{background:var(--moss-deep);color:var(--paper);padding:13px 20px;font-family:'Fraunces',serif;font-weight:600;font-size:17px;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
+.score-intro{font-size:15px;color:var(--ink-soft);padding:14px 20px 4px;line-height:1.5}
+.score-row{padding:15px 20px;border-bottom:1px solid var(--line-soft)}
+.score-row:last-child{border-bottom:none}
+.score-row .scr-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.score-row .scr-name{font-family:'Fraunces',serif;font-weight:600;font-size:16px}
+.score-row.notassessed{opacity:.78}
+/* the three-band verdict pill */
+.verdict{font-family:'Fraunces',serif;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;padding:3px 9px;border-radius:2px;white-space:nowrap}
+.verdict.above{background:rgba(74,93,67,.16);color:var(--moss-deep)}
+.verdict.acceptable{background:rgba(176,138,62,.18);color:#8a6a20}
+.verdict.below{background:rgba(143,63,44,.13);color:var(--rust)}
+.verdict.unscored{background:var(--line-soft);color:var(--ink-soft)}
+/* a small band chip (green/amber/red) used to show proposal/aspiration/minimum */
+.bandchip{font-family:'Fraunces',serif;font-size:10px;letter-spacing:.04em;font-weight:600;padding:1px 7px;border-radius:2px;white-space:nowrap}
+.bandchip.green{background:rgba(74,93,67,.16);color:var(--moss-deep)}
+.bandchip.amber{background:rgba(176,138,62,.2);color:#8a6a20}
+.bandchip.red{background:rgba(143,63,44,.14);color:var(--rust)}
+.bandchip.none{background:var(--line-soft);color:var(--ink-soft)}
+.score-row .scr-detail{font-size:14px;color:var(--ink-soft);line-height:1.5;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.score-row .scr-detail .scr-pair{display:inline-flex;align-items:center;gap:5px}
+.score-row .scr-detail .scr-lab{font-family:'Fraunces',serif;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--ink-soft)}
+.score-row .scr-note{font-size:14px;color:var(--ink-soft);line-height:1.5;margin-top:4px}
+.score-custom{padding:14px 20px}
+.score-custom .scr-name{font-family:'Fraunces',serif;font-weight:600;font-size:15px;margin-bottom:6px}
+.score-custom ul{list-style:none;margin:0;padding:0}
+.score-custom li{font-size:15px;color:var(--ink);padding:7px 0 7px 22px;position:relative;border-bottom:1px solid var(--line-soft)}
+.score-custom li:last-child{border-bottom:none}
+.score-custom li::before{content:"\25A2";position:absolute;left:0;color:var(--gold);font-size:15px}
+.score-custom .scr-note{font-style:italic;color:var(--ink-soft);font-size:13.5px;margin-top:8px}
+
+/* ---- re-survey milestones (Phase 7; D5) ---- */
+.revisit-block{border:1.5px solid var(--ink);background:var(--paper-card);margin:22px 0;border-radius:3px;overflow:hidden}
+.revisit-block .sb-head{background:var(--sky);color:var(--paper);padding:13px 20px;font-family:'Fraunces',serif;font-weight:600;font-size:17px;letter-spacing:.01em;display:flex;align-items:center;gap:10px}
+.revisit-intro{font-size:15px;color:var(--ink-soft);padding:14px 20px 2px;line-height:1.5}
+.milestone{padding:13px 20px;border-bottom:1px solid var(--line-soft);display:flex;gap:14px}
+.milestone:last-child{border-bottom:none}
+.milestone.next{background:rgba(61,90,108,.06)}
+.milestone .ms-mark{font-family:'Fraunces',serif;font-weight:700;color:var(--sky);font-size:13px;min-width:54px;letter-spacing:.04em;text-transform:uppercase;padding-top:2px}
+.milestone.next .ms-mark{color:var(--clay)}
+.milestone .ms-body .ms-title{font-family:'Fraunces',serif;font-weight:600;font-size:15.5px;margin-bottom:3px}
+.milestone .ms-body p{font-size:14.5px;color:var(--ink-soft);line-height:1.5}
+.milestone .ms-next-tag{font-family:'Fraunces',serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--clay);margin-left:8px}
 
 .meta-line{font-size:14px;color:var(--ink-soft);font-style:italic;margin-top:6px}
 
@@ -138,6 +208,8 @@ footer{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-si
   #screen-summary{display:block!important;animation:none}
   .sum-block{break-inside:avoid;box-shadow:none}
   .sum-row{break-inside:avoid}
+  .score-block,.revisit-block{break-inside:avoid;box-shadow:none}
+  .score-row,.milestone,.score-custom{break-inside:avoid}
   .wrap{max-width:100%;padding:0}
 }
 /* ---- question info button ---- */
@@ -198,19 +270,83 @@ footer{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-si
 .sec-divider h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(28px,5vw,42px);line-height:1.05;letter-spacing:-.015em;margin-bottom:16px}
 .sec-divider .sec-blurb{font-size:18px;color:var(--ink-soft);max-width:620px;margin-bottom:8px}
 .sec-track-badge{display:inline-flex;align-items:center;gap:9px;font-family:'Fraunces',serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:5px 13px;border-radius:2px;margin-bottom:22px}
-.sec-track-badge.crown{background:rgba(61,90,108,.12);color:var(--sky)}
-.sec-track-badge.company{background:rgba(156,90,54,.1);color:var(--clay)}
+/* Four-track color system (extends the original sky/clay pair with two
+   harmonious additions — moss for Federal, gold for MOU — drawn from the
+   existing palette, not a redesign). */
+.sec-track-badge.crownProv{background:rgba(61,90,108,.12);color:var(--sky)}
+.sec-track-badge.crownFed{background:rgba(74,93,67,.14);color:var(--moss-deep)}
+.sec-track-badge.mou{background:rgba(176,138,62,.14);color:#8a6a20}
+.sec-track-badge.iba{background:rgba(156,90,54,.1);color:var(--clay)}
 .sec-rule{height:2.5px;background:var(--ink);margin:18px 0 0}
 
-/* ---- track tag on question header ---- */
-.qtag.crown{background:var(--sky)}
-.qtag.company{background:var(--clay)}
+/* ---- track tag on question header (one per track) ---- */
+.qtag.crownProv{background:var(--sky)}
+.qtag.crownFed{background:var(--moss-deep)}
+.qtag.mou{background:var(--gold)}
+.qtag.iba{background:var(--clay)}
+
+/* ---- hub screen (route between Goals and the tracks) ---- */
+.hub-intro{font-size:19px;color:var(--ink-soft);margin-bottom:8px;max-width:660px}
+.hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:28px 0 6px}
+.hub-card{border:1.5px solid var(--line);background:var(--paper-card);border-radius:3px;padding:20px 22px;text-align:left;cursor:pointer;transition:border-color .18s,transform .12s,box-shadow .15s;display:flex;flex-direction:column;gap:6px;position:relative}
+.hub-card:hover{transform:translateY(-2px);box-shadow:3px 3px 0 var(--ink)}
+.hub-card:focus-visible{outline:2px solid var(--sky);outline-offset:2px}
+.hub-card.disabled{cursor:not-allowed;opacity:.62}
+.hub-card.disabled:hover{transform:none;box-shadow:none}
+.hub-card.crownProv{border-color:rgba(61,90,108,.4)}
+.hub-card.crownFed{border-color:rgba(74,93,67,.42)}
+.hub-card.mou{border-color:rgba(176,138,62,.42)}
+.hub-card.iba{border-color:rgba(156,90,54,.4)}
+.hub-card .hc-badge{font-family:'Fraunces',serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin-bottom:2px}
+.hub-card.crownProv .hc-badge{color:var(--sky)}
+.hub-card.crownFed .hc-badge{color:var(--moss-deep)}
+.hub-card.mou .hc-badge{color:#8a6a20}
+.hub-card.iba .hc-badge{color:var(--clay)}
+.hub-card .hc-name{font-family:'Fraunces',serif;font-weight:600;font-size:19px;letter-spacing:-.01em}
+.hub-card .hc-blurb{font-size:14.5px;color:var(--ink-soft);line-height:1.5}
+.hc-state{font-family:'Fraunces',serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;padding:3px 9px;border-radius:2px;align-self:flex-start;margin-top:6px}
+.hc-state.notstarted{background:var(--line-soft);color:var(--ink-soft)}
+.hc-state.inprogress{background:rgba(176,138,62,.18);color:#8a6a20}
+.hc-state.done{background:rgba(74,93,67,.16);color:var(--moss-deep)}
+.hc-state.soon{background:var(--line-soft);color:var(--ink-soft);font-style:italic}
+
+/* ---- goals (Step 0) ---- */
+.goal-card{border:1.5px solid var(--line);background:var(--paper-card);border-radius:3px;padding:20px 22px;margin:16px 0}
+.goal-card.cumulative{border-color:rgba(61,90,108,.4);background:rgba(61,90,108,.04)}
+.goal-card.custom{border-color:rgba(176,138,62,.42);background:rgba(176,138,62,.04)}
+.goal-head{display:flex;align-items:baseline;gap:12px;margin-bottom:8px}
+.goal-num{font-family:'Fraunces',serif;font-weight:700;color:var(--clay);font-size:14px;letter-spacing:.08em;text-transform:uppercase;min-width:30px}
+.goal-title{font-family:'Fraunces',serif;font-weight:600;font-size:20px;line-height:1.14;letter-spacing:-.01em}
+.goal-why{font-size:15.5px;color:var(--ink-soft);margin-bottom:16px;max-width:640px}
+.band-group{margin-bottom:14px}
+.band-group:last-child{margin-bottom:0}
+.band-group-label{font-family:'Fraunces',serif;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;color:var(--moss-deep);margin-bottom:8px;display:block}
+.band-group.minimum .band-group-label{color:var(--clay)}
+.bands{display:grid;gap:9px}
+.band{border:1.5px solid var(--line);background:var(--paper);border-radius:3px;padding:11px 14px;cursor:pointer;transition:border-color .16s,background .16s;display:flex;gap:11px;align-items:flex-start}
+.band:hover{border-color:var(--clay-soft)}
+.band.sel{border-color:var(--moss-deep);background:rgba(74,93,67,.08);box-shadow:inset 3px 0 0 var(--moss-deep)}
+.band .bdot{min-width:16px;height:16px;border-radius:50%;border:2px solid var(--line);margin-top:3px;transition:.16s;position:relative}
+.band.sel .bdot{border-color:var(--moss-deep);background:var(--moss-deep)}
+.band.sel .bdot::after{content:"";position:absolute;inset:3px;background:var(--paper);border-radius:50%}
+.band .btext{flex:1}
+.band-name{font-family:'Fraunces',serif;font-weight:600;font-size:13px;letter-spacing:.02em;margin-bottom:1px}
+.band.green .band-name{color:var(--moss-deep)}
+.band.amber .band-name{color:#8a6a20}
+.band.red .band-name{color:var(--rust)}
+.band-desc{font-size:14.5px;color:var(--ink-soft);line-height:1.42}
+.goal-custom-input{width:100%;font-family:'Newsreader',Georgia,serif;font-size:16px;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:3px;padding:12px 14px;line-height:1.5;resize:vertical;min-height:84px}
+.goal-custom-input:focus{outline:none;border-color:var(--moss-deep);box-shadow:inset 3px 0 0 var(--moss-deep)}
+.goals-intro{font-size:18.5px;color:var(--ink-soft);margin-bottom:6px;max-width:660px}
+.cum-followup{margin-top:14px;border-top:1px dashed var(--line);padding-top:14px}
 
 @media print{
   .twotrack,.tt-grid{break-inside:avoid}
+  .goal-card{break-inside:avoid}
 }
 @media(max-width:560px){
   .tt-grid{grid-template-columns:1fr}
+  .hub-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -240,24 +376,24 @@ footer{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-si
   <p class="lede">When a company proposes a project — a mine, a pipeline, an energy facility — on your territory, the decisions come fast and the stakes are long. This tool walks you through the questions that matter most, in plain language. At each step you choose what fits your situation, and the tool shows you the <strong>strongest option</strong> alongside <strong>alternatives</strong> that may suit your circumstances better.</p>
 
   <div class="twotrack">
-    <div class="tt-head">One proposal, two separate relationships</div>
-    <p class="tt-lead">The most important thing to understand before you start: a proposal involves <strong>two tracks that run in parallel</strong>, and one cannot stand in for the other.</p>
+    <div class="tt-head">First your goals, then four separate relationships</div>
+    <p class="tt-lead">Before weighing any single piece, you start by setting <strong>your Nation's own goals</strong> — what a good outcome looks like to you. Then a proposal is checked across <strong>four tracks that run in parallel</strong>, each a different relationship. One cannot stand in for another, and you can work through them in any order.</p>
     <div class="tt-grid">
       <div class="tt-card tt-crown">
-        <div class="tt-label">Track 1 · The Crown</div>
+        <div class="tt-label">The Crown — Provincial &amp; Federal</div>
         <div class="tt-name">Government's duties to you</div>
-        <p>Canada and BC owe your Nation duties that exist <strong>whether or not you ever sign a deal with the company</strong>: to consult and seek your consent, to share government revenue, to assess the build-up of all development, and to make sure the site is cleaned up. Signing a company deal does <strong>not</strong> let the government off the hook for any of this.</p>
+        <p>Canada and BC owe your Nation duties that exist <strong>whether or not you ever sign a deal with the company</strong>: to consult and seek your consent, to share government revenue, to assess the build-up of all development, and to make sure the site is cleaned up. Provincial and federal obligations are split into their own tracks.</p>
       </div>
       <div class="tt-card tt-company">
-        <div class="tt-label">Track 2 · The Company</div>
-        <div class="tt-name">Your deal with the proponent (the IBA)</div>
-        <p>A private contract between your Nation and the company over jobs, contracts, money, equity, and project-specific protections. It is valuable — but it is <strong>not</strong> consent, it does not replace government revenue sharing, and it cannot fix cumulative effects or guarantee clean-up on its own.</p>
+        <div class="tt-label">Early agreement &amp; the Company IBA</div>
+        <div class="tt-name">Your agreements with the proponent</div>
+        <p>An early agreement (MOU) can set the ground rules before the proponent acts; the IBA is the private contract over jobs, contracts, money, equity, and project-specific protections. Valuable — but <strong>not</strong> consent, no replacement for government revenue sharing, and no fix for cumulative effects on its own.</p>
       </div>
     </div>
-    <p class="tt-foot">This walkthrough is built in matching sections so you can check both tracks — and so new sections can be added as the research grows.</p>
+    <p class="tt-foot">You begin with a short goals step, then choose tracks from a hub in whatever order suits you — and new tracks can be added as the research grows.</p>
   </div>
 
-  <p class="lede" style="margin-bottom:8px">At the end you get a <strong>shareable summary</strong> — a plain-language snapshot of where the proposal stands across both tracks and a clear list of what to ask for, and of whom. You can print it or save it to bring into the room.</p>
+  <p class="lede" style="margin-bottom:8px">At the end you get a <strong>shareable summary</strong> — a plain-language snapshot of where the proposal stands across the tracks, scored against the goals you set, and a clear list of what to ask for, and of whom. You can print it or save it to bring into the room.</p>
 
   <div class="intro-grid">
     <div class="feat"><div class="num">1</div><div><h3>Answer in plain language</h3><p>No legal background needed. Technical and legal terms are underlined — tap or hover to see what they mean.</p></div></div>
@@ -269,9 +405,15 @@ footer{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-si
 
   <div class="btn-row">
     <button class="btn btn-primary" onclick="start()">Begin the walkthrough &nbsp;→</button>
-    <span class="meta-line">About 12–16 minutes · 2 sections · 14 questions</span>
+    <span class="meta-line">About 15–20 minutes · a goals step, then four tracks from a hub</span>
   </div>
 </div>
+
+<!-- ============ GOALS (Step 0) injected by JS ============ -->
+<div class="screen" id="screen-goals"></div>
+
+<!-- ============ HUB (track chooser) injected by JS ============ -->
+<div class="screen" id="screen-hub"></div>
 
 <!-- ============ QUESTION SCREENS injected by JS ============ -->
 <div class="screen" id="screen-q"></div>
@@ -289,6 +431,9 @@ footer{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-si
 /* ---------- GLOSSARY (plain-language, from research) ---------- */
 const GLOSSARY={
  "IBA":"Impact Benefit Agreement — a private, legally binding contract between your Nation and the company, setting out how the project's benefits (money, jobs, contracts) and harms will be shared and managed. It is NOT the same as consent and does not approve the project.",
+ "MOU":"Memorandum of Understanding — a light, early agreement that sets the ground rules for how your Nation and a proponent will work together BEFORE any full IBA. It usually records how you'll communicate, share information, and fund your review — and should say plainly that talking is not consent and nothing is given up. Often non-binding, but the protective language in it can matter.",
+ "exploration agreement":"An early agreement covering a company's EXPLORATION work (drilling, sampling, road-building to test a deposit) before any mine is proposed. It can set conditions, payments, and protections for this pre-project phase — and is a natural first point to put 'without prejudice' and capacity-funding terms in writing.",
+ "without prejudice":"A protective phrase meaning that talking, negotiating, or signing an early agreement does NOT give anything up — it does not waive your rights or title, does not count as your consent, and does not commit you to the project. Putting 'without prejudice to our rights and consent' at the front of any MOU keeps your legal position fully intact.",
  "FPIC":"Free, Prior and Informed Consent — the standard that you should be consulted and your consent sought, in good faith, BEFORE a project affecting your lands is approved. In BC this works through specific agreements and processes, not as a simple veto.",
  "duty to consult":"The government's (the Crown's) legal obligation to consult, and where appropriate accommodate, your Nation when it considers something that could affect your rights. It is the government's job — not the company's — and an IBA does not satisfy it.",
  "closure":"The permanent end of a project — shutting it down and taking the site apart. The dangerous version is a SUDDEN shutdown from bankruptcy or a price crash, before any proper plan is in place.",
@@ -304,6 +449,10 @@ const GLOSSARY={
  "ECDA":"Economic and Community Development Agreement — a PUBLIC agreement between your Nation and the BC government that shares a slice of the province's mineral tax revenue. It is predictable and carries no gag clause, but provides no environmental or closure protection.",
  "Section 7 agreement":"A consent-based decision-making agreement with the BC government under DRIPA. It can give your Nation real authority to say yes or no to a decision — separate from any benefit deal with the company.",
  "DRIPA":"BC's Declaration on the Rights of Indigenous Peoples Act (2019) — the law bringing UNDRIP into BC. Recent court rulings have made it a stronger, mandatory standard for interpreting BC law.",
+ "UNDA":"Canada's United Nations Declaration on the Rights of Indigenous Peoples Act (2021) — the FEDERAL counterpart to BC's DRIPA. It commits Canada to align its laws with UNDRIP and to a national action plan. Its 'consult and cooperate' duty is distinct from the constitutional duty to consult and is not yet settled by the courts.",
+ "UNDRIP":"The UN Declaration on the Rights of Indigenous Peoples (2007) — the international standard that Canada (through UNDA) and BC (through DRIPA) have committed to implement. It sets out rights including free, prior and informed consent.",
+ "Impact Assessment Act":"The FEDERAL environmental-assessment law (2019). Its 'designated projects' scheme decides which big projects get a federal impact assessment. After a 2023 Supreme Court ruling and 2024 amendments, it now reaches only projects with real federal effects — so many wholly-in-province mines fall outside it.",
+ "Reference re IAA":"The 2023 Supreme Court of Canada opinion (2023 SCC 23) that found most of the federal Impact Assessment Act's 'designated projects' scheme unconstitutional — it reached too far into provincial jurisdiction. Canada narrowed the Act by 2024 amendments. The practical effect: a wholly-in-province project may have NO federal assessment, leaving BC's process (and the provincial track) as the main arena.",
  "environmental assessment":"The government's formal public review of whether and how a project can proceed. It is separate from your IBA — signing an IBA does not replace your role in this review.",
  "progressive reclamation":"Cleaning up disturbed areas DURING the life of the project, bit by bit, instead of leaving it all to the end. It lowers the risk of a huge unfunded mess if the company fails.",
  "gag clause":"A clause that bars your community from criticizing or opposing the project. A serious warning sign — used against the community in the documented Pinehouse case.",
@@ -319,28 +468,80 @@ const GLOSSARY={
  "ECDA / revenue sharing":"Government-to-government revenue sharing — the province sharing a slice of its OWN mineral or forestry tax revenue with your Nation. Separate from, and additional to, anything the company pays you. A Nation should usually have both."
 };
 
-/* ---------- QUESTIONS (content from research library) ---------- */
-/* ---------- SECTIONS (modular — new sections slot in here) ---------- */
-const SECTIONS={
- crown:{eyebrow:"Section 1 of 2",track:"crown",badge:"Track 1 · The Crown",title:"The Government's Duties to You",blurb:"Before looking at any deal with the company, start here. Canada and BC owe your Nation duties that exist on their own — and that signing a company agreement does not satisfy. These questions check whether that track is being handled."},
- company:{eyebrow:"Section 2 of 2",track:"company",badge:"Track 2 · The Company",title:"Your Deal with the Company",blurb:"Now the proponent agreement itself — the IBA. These questions weigh the benefits, the protections, and the gaps that strong agreements close and weak ones leave open."}
+/* ---------- TRACKS (the four independently-entered tracks; A2) ----------
+   Each: {label, badge, color, blurb, questionIds[]}. The hub renders one card
+   per track; the engine resolves a track to its ordered question list via
+   resolveTrack(). Question objects carry a `track` (their HOME track) + a
+   per-track `num`; for display, the engine numbers questions by their position
+   in the resolved track list (displayNum), so the shared foundation reads as
+   Q1/Q2 in BOTH Crown tracks (D11 / DL-0025). The MOU track lands in Phase 4.
+
+   CROWN SPLIT (A6 / DL-0025), grounded in research/crown_obligations.md:
+     • Shared foundation (Buckets 1/2) — `rights`, `consult` — is asked ONCE and
+       answered once by id (answers[id]); its ids appear in BOTH Crown tracks'
+       questionIds so each track walks them, but the single answer is shared.
+       The two questions are HOMED on crownProv (their `track` field) and the
+       resolver re-numbers them per track for display.
+     • Provincial branch (crownProv) = shared foundation + `consent` (DRIPA
+       ss.6–7 / s.7, Bucket 4) + `revenue` (ECDA/FCRSA, Bucket 5) + BC EAA-2018
+       participation content + `cumulative` (Yahey/Treaty-8 cumulative is
+       provincial land-management, Bucket 8 — moved here from crownFed).
+     • Federal branch (crownFed) = shared foundation + federal IAA participation
+       framed by *Reference re IAA* 2023 SCC 23 applicability (Bucket 6, federal
+       half) + UNDA. Signals WHEN the federal track applies.
+*/
+const TRACKS={
+ crownProv:{
+  label:"The Crown — Provincial",
+  badge:"Track · Crown (Provincial)",
+  color:"crownProv",
+  blurb:"BC's duties to you — consultation, consent, provincial revenue sharing, and the build-up of all development on your territory — which exist whether or not you ever sign a company deal.",
+  questionIds:["rights","consult","consent","revenue","cumulative"]
+ },
+ crownFed:{
+  label:"The Crown — Federal",
+  badge:"Track · Crown (Federal)",
+  color:"crownFed",
+  blurb:"Canada's duties — and, first, whether a federal assessment even applies to this project after the 2023 Supreme Court reference narrowed the federal scheme.",
+  questionIds:["rights","consult","federal","unda"]
+ },
+ mou:{
+  label:"Early Agreement (MOU)",
+  badge:"Track · Early Agreement",
+  color:"mou",
+  blurb:"When an MOU or early agreement should be in place — and the trigger points for each — so your Nation initiates before the proponent acts.",
+  questionIds:["mouTrigger","mouInstrument","mouCapacity","mouCautions"]
+ },
+ iba:{
+  label:"The Company (IBA)",
+  badge:"Track · The Company",
+  color:"iba",
+  blurb:"Your deal with the proponent — the benefits, the protections, and the gaps that strong agreements close and weak ones leave open.",
+  questionIds:["stage","instrument","capacity","closure","environment","culture","enforce","confidential","equity"]
+ }
 };
+/* Ordered list of track ids — drives the hub and the summary. */
+const TRACK_ORDER=["crownProv","crownFed","mou","iba"];
 
 const Q=[
-/* ===== SECTION 1 — CROWN TRACK ===== */
+/* ===== SHARED FOUNDATION (Buckets 1/2) — `rights` + `consult`. Homed on
+        crownProv (their `track`), but listed in BOTH Crown tracks' questionIds
+        so each track walks them; answered ONCE by id (answers[id]). The engine
+        re-numbers them per track for display (Q1/Q2 in either Crown track). ===== */
+/* ===== TRACK: crownProv — The Crown (Provincial): shared foundation + consent +
+        revenue + cumulative ===== */
 {
- id:"rights", section:"crown", track:"crown", num:"Question 1", tag:"Foundation", priority:false,
+ id:"rights", track:"crownProv", num:"Question 1", tag:"Foundation", priority:false,
  title:"What is the strength of your rights and title here?",
  why:"Everything starts here. <span class='term' data-g='Aboriginal title'>Aboriginal title</span> is an ownership-like right to the land; <span class='term' data-g='Aboriginal rights'>Aboriginal rights</span> are specific practices like hunting and fishing. Most of BC is <span class='term' data-g='unceded'>unceded</span>, so title is usually asserted but unproven — and the stronger your claim plus the more serious the impact, the deeper the government's duty to you. This drives all your leverage.",
  opts:[
   {k:"title",label:"Established title or a modern treaty",desc:"A court has confirmed title, or you have a modern treaty or title agreement (like Haida's). The Crown needs your consent or must meet a strict justification test."},
   {k:"treaty8",label:"A historic treaty (e.g. Treaty 8)",desc:"You hold treaty rights — which, after Yahey, give strong leverage over the build-up of development."},
-  {k:"strong-asserted",label:"Strong asserted title, unproven in court",desc:"Long-standing occupation and use, but no court declaration yet — the common situation in BC. A strong claim plus serious impact means deep consultation is owed."},
-  {k:"unsure",label:"We're not sure how to characterize it",desc:"The strength of the claim hasn't been assessed."}
+  {k:"strong-asserted",label:"Strong asserted title, unproven in court",desc:"Long-standing occupation and use, but no court declaration yet — the common situation in BC. A strong claim plus serious impact means deep consultation is owed."}
  ]
 },
 {
- id:"consult", section:"crown", track:"crown", num:"Question 2", tag:"Crown duty", priority:false,
+ id:"consult", track:"crownProv", num:"Question 2", tag:"Crown duty", priority:false,
  title:"Is the government meeting its duty to consult — separately from the company?",
  why:"The <span class='term' data-g='duty to consult'>duty to consult</span> flows from the <span class='term' data-g='honour of the Crown'>honour of the Crown</span> and is the government's job. A company can carry out <em>procedural</em> steps through IBA talks, but this <strong>does not discharge the Crown's duty</strong> — and the government stays legally responsible if consultation falls short. Watch for the government quietly leaning on the company to do its consulting.",
  opts:[
@@ -351,53 +552,50 @@ const Q=[
  ]
 },
 {
- id:"consent", section:"crown", track:"crown", num:"Question 3", tag:"Consent", priority:false,
+ id:"consent", track:"crownProv", num:"Question 3", tag:"Consent", priority:false,
  title:"Is there a consent agreement that makes your 'yes' actually binding?",
  why:"Since <span class='term' data-g='Gitxaala'>Gitxaala (2025)</span>, <span class='term' data-g='DRIPA'>DRIPA</span> has real legal force in BC \u2014 though that ruling is now under appeal at the Supreme Court of Canada, so confirm its status with counsel. Even so, in the regular environmental assessment the minister can still approve a project <strong>without</strong> your consent. The exception: where you have a modern treaty or a <span class='term' data-g='Section 7 agreement'>Section 7 consent agreement</span> with the province, your consent becomes a binding condition. That agreement is the single biggest factor in whether your 'no' has legal weight.",
  opts:[
   {k:"yes",label:"Yes — a Section 7 consent agreement or treaty requires our consent",desc:"Like the Tahltan's consent agreements for Eskay Creek and Red Chris — the province cannot decide without us."},
   {k:"seeking",label:"We're pursuing one, or it's under negotiation",desc:"We've asked for consent-based decision-making but it isn't signed."},
-  {k:"ea-only",label:"No — we rely on the assessment process, where the minister has final say",desc:"We can register consent or lack of consent, but the minister can still approve without us."},
-  {k:"unsure",label:"We don't know what our consent status is",desc:"It's unclear whether our consent is legally required for any decision."}
+  {k:"ea-only",label:"No — we rely on the assessment process, where the minister has final say",desc:"We can register consent or lack of consent, but the minister can still approve without us."}
  ]
 },
 {
- id:"revenue", section:"crown", track:"crown", num:"Question 4", tag:"Crown revenue", priority:false,
+ id:"revenue", track:"crownProv", num:"Question 4", tag:"Crown revenue", priority:false, naEligible:true,
  title:"Are you getting government revenue sharing — on top of the company deal?",
  why:"This is money the <strong>province</strong> shares from its own taxes — separate from anything the company pays you. For a mine that's an <span class='term' data-g='ECDA / revenue sharing'>ECDA</span> (a share of provincial mineral tax); for forestry, a revenue-sharing agreement. A Nation should usually have <strong>both</strong> Crown revenue sharing and a company IBA — neither replaces the other. Many Nations leave the Crown share on the table.",
  opts:[
   {k:"both",label:"Yes — we have (or are negotiating) Crown revenue sharing as well as the IBA",desc:"We're pursuing the provincial share (ECDA or equivalent) in parallel with the company deal."},
-  {k:"iba-only",label:"No — we're only dealing with the company",desc:"Revenue is coming only from the proponent; no government revenue-sharing agreement is in play."},
-  {k:"unsure",label:"We're not sure if a Crown revenue share applies",desc:"We haven't checked whether an ECDA or revenue-sharing agreement is available."}
+  {k:"iba-only",label:"No — we're only dealing with the company",desc:"Revenue is coming only from the proponent; no government revenue-sharing agreement is in play."}
  ]
 },
-/* ===== SECTION 2 — COMPANY / IBA TRACK ===== */
+/* ===== TRACK: iba — The Company (IBA) ===== */
 {
- id:"stage", section:"company", track:"company", num:"Question 5", tag:"Where you are", priority:false,
+ id:"stage", track:"iba", num:"Question 1", tag:"Where you are", priority:false,
  title:"Where is this proposal in its life?",
  why:"There's a trade-off in timing. Your <strong>leverage is highest before the project is approved</strong> — but that's also when you have the <em>least</em> information about the real impacts. Later, you know more but can ask for less. The protections that matter decades later are the easiest to put off, so timing shapes everything that follows.",
  opts:[
   {k:"early",label:"Early — exploration or first contact",desc:"The company is exploring, or has just approached you. Nothing is approved yet."},
+  {k:"govreview",label:"Government review and approval processes",desc:"The project is moving through government review — permitting, regulatory approvals, and Crown decisions are being prepared or made."},
   {k:"ea",label:"In review — environmental assessment underway",desc:"The project is in the BC or federal assessment process; decisions are being made now."},
   {k:"negotiating",label:"Negotiating — talking terms now",desc:"You're at the table discussing an agreement, or about to be."},
   {k:"operating",label:"Operating or expanding — already running",desc:"The project is built and running, or the company wants to expand or change it."}
  ]
 },
 {
- id:"instrument", section:"company", track:"company", num:"Question 6", tag:"What you're signing", priority:false,
- title:"Which agreement is on the table?",
- why:"A Nation often needs <strong>three different instruments</strong>, each doing different work: a <span class='term' data-g='Section 7 agreement'>consent agreement</span> with government (the power to say yes/no), an <span class='term' data-g='ECDA / revenue sharing'>ECDA</span> (revenue from government), and a company <span class='term' data-g='IBA'>IBA</span> (benefits and protections). Don't let one stand in for another.",
+ id:"instrument", track:"iba", num:"Question 2", tag:"What you're signing", priority:false,
+ why:"There's an order to these instruments, and a trigger for each. A light <span class='term' data-g='MOU'>MOU</span> or early agreement comes <strong>first</strong> — its trigger is <strong>first contact</strong> (a company asking to explore, drill, or talk), and it sets the ground rules cheaply while leverage is high. A full <span class='term' data-g='IBA'>IBA</span> comes <strong>later</strong> — its trigger is a <strong>defined project</strong> heading into review or approval, and it locks in benefits and protections. The mistake to avoid is letting the proponent set the pace: a Nation should <strong>initiate the early agreement before the proponent acts</strong>, so the ground rules — and any protective language — are set on your terms, not theirs. (The power to say yes or no to the project sits in the <strong>Crown track</strong>, not here.)",
+ title:"Which agreement is on the table — and is it the right one for this stage?",
  opts:[
-  {k:"iba",label:"A company IBA (benefit agreement)",desc:"A private deal with the company over money, jobs, contracts, and protections."},
-  {k:"early-agree",label:"An early agreement (MOU / exploration / capacity-funding)",desc:"A lighter, pre-project agreement — including funding for your own advisors — before any full IBA."},
-  {k:"consent",label:"A consent / decision-making agreement with government",desc:"An agreement with the Crown about who gets to decide — like the Tahltan Section 7 model."},
-  {k:"unsure",label:"Not sure yet / more than one",desc:"Still working out what's being proposed."}
+  {k:"iba",label:"A company IBA (benefit agreement)",desc:"A private deal with the company over money, jobs, contracts, and protections — the right instrument once there is a defined project heading into review or approval."},
+  {k:"early-agree",label:"An early agreement (MOU / exploration / capacity-funding)",desc:"A lighter, pre-project agreement — including funding for your own advisors — that belongs at first contact, before any full IBA. Initiate it before the proponent acts."}
  ]
 },
 {
- id:"capacity", section:"company", track:"company", num:"Question 7", tag:"Your readiness", priority:false,
+ id:"capacity", track:"iba", num:"Question 3", tag:"Your readiness", priority:false,
  title:"Do you have your own independent advisors?",
- why:"In one survey, <strong>71% of First Nations could not afford the experts</strong> needed to review a project's impacts. The single most reliable lever you control is your own capacity. <span class='term' data-g='capacity funding'>Capacity funding</span> to hire advisors can often be required from the company or government.",
+ why:"In one survey, <strong>71% of First Nations could not afford the experts</strong> needed to review a project's impacts. The single most reliable lever you control is your own capacity. <span class='term' data-g='capacity funding'>Capacity funding</span> to hire advisors can often be required from the company or government — but watch how it's structured, because it can be used to <strong>influence you</strong>. The discipline is simple: <strong>the funds should flow to the Nation, and the Nation should choose and instruct its own experts</strong>. Funding should ideally come from the <strong>Crown</strong> (for example, participant funding in the assessment), which keeps the advice at arm's length. Be wary of company-provided or company-recommended experts — advice paid for and chosen by the proponent is not independent. The <strong>last option below is a big red flag</strong>.",
  opts:[
   {k:"yes",label:"Yes — we have independent legal, financial and technical advisors",desc:"Our own people, not shared with the company."},
   {k:"partial",label:"Some — we have a little support but gaps remain",desc:"Perhaps a lawyer, but no independent cost or environmental review."},
@@ -405,18 +603,17 @@ const Q=[
  ]
 },
 {
- id:"closure", section:"company", track:"company", num:"Question 8", tag:"Priority", priority:true,
+ id:"closure", track:"iba", num:"Question 4", tag:"Priority", priority:true, naEligible:true,
  title:"What happens at the end — and if the company fails?",
- why:"This is the field's <strong>biggest documented gap</strong>. In one study of 50 agreements, only 7 dealt with <span class='term' data-g='closure'>closure</span> seriously. The government-held clean-up money is often far too low — BC ran roughly a <strong>$1.1 billion shortfall</strong>, and at the Tulsequah mine it held under 1% of the cost. And <span class='term' data-g='Redwater'>Redwater</span> tells you clean-up ranks first in bankruptcy — but first-in-line is worth nothing if the bankrupt company has no money left. Up-front security is the only reliable protection. Treat this as a first-order issue, never boilerplate.",
+ why:"This is the field's <strong>biggest documented gap</strong>. In one study of 50 agreements, only 7 dealt with <span class='term' data-g='closure'>closure</span> seriously. <strong>Assess what government is doing first</strong>: the Crown is supposed to hold reclamation security as the backstop, so check whether it actually holds enough — then put closure protections in the IBA <strong>only where the government isn't doing enough</strong>. Often it isn't: the government-held clean-up money is frequently far too low — BC ran roughly a <strong>$1.1 billion shortfall</strong> (2020 figures; a 2024 investigation found a ~$753 million gap in a single year, and BC's bonding-strategy reform is paused), and at the Tulsequah mine it held under 1% of the cost. And <span class='term' data-g='Redwater'>Redwater</span> tells you clean-up ranks first in bankruptcy — but first-in-line is worth nothing if the bankrupt company has no money left. Up-front security is the only reliable protection. One caution at this stage: taking an ownership (<span class='term' data-g='equity'>equity</span>) stake can put you on the hook for closure and clean-up liabilities as a part-owner, and pulls you toward wanting the project to keep running — the opposite of pressing hard on closure. Treat this as a first-order issue, never boilerplate.",
  opts:[
   {k:"strong",label:"Closure is covered up front, in its own section",desc:"Progressive clean-up during operations, your consent to change the plan, escrowed long-term monitoring, equipment disposition, and protection if the company goes bankrupt."},
   {k:"some",label:"Closure is mentioned, but thin",desc:"Some words about clean-up, but no funding, no bankruptcy protection, no say over changes."},
-  {k:"none",label:"Closure isn't really addressed",desc:"The agreement focuses on the operating years; the end is vague or absent."},
-  {k:"unknown",label:"I don't know what it says about closure",desc:"We haven't worked through this part."}
+  {k:"none",label:"Closure isn't really addressed",desc:"The agreement focuses on the operating years; the end is vague or absent."}
  ]
 },
 {
- id:"environment", section:"company", track:"company", num:"Question 9", tag:"Protection", priority:false,
+ id:"environment", track:"iba", num:"Question 5", tag:"Protection", priority:false,
  title:"Can your Nation monitor and protect the land itself?",
  why:"The strongest agreements put <strong>Indigenous monitors on the ground</strong> with real access — like the Guardians written into the Voisey's Bay agreement, who have caught real spills. Monitoring works when it is funded and staffed, and weakens when it isn't.",
  opts:[
@@ -426,7 +623,7 @@ const Q=[
  ]
 },
 {
- id:"culture", section:"company", track:"company", num:"Question 10", tag:"Protection", priority:false,
+ id:"culture", track:"iba", num:"Question 6", tag:"Protection", priority:false, naEligible:true,
  title:"Are cultural and heritage sites truly protected?",
  why:"The lesson of <strong>Juukan Gorge</strong> — where a company lawfully destroyed 46,000-year-old sacred caves under an old consent — is that 'consultation' is not enough. Heritage protection must include your <strong>consent to proceed</strong> and the power to halt work, not just a promise to talk.",
  opts:[
@@ -436,7 +633,7 @@ const Q=[
  ]
 },
 {
- id:"enforce", section:"company", track:"company", num:"Question 11", tag:"Teeth", priority:false,
+ id:"enforce", track:"iba", num:"Question 7", tag:"Teeth", priority:false,
  title:"If the company breaks its promises, what happens?",
  why:"Promises are only as good as their enforcement. At <strong>Mary River</strong>, a real arbitration clause worked — a panel ordered the company to pay $7.3M it owed. The strongest agreements turn targets into <strong>penalties drawn from a bond the Nation holds</strong>, plus binding arbitration.",
  opts:[
@@ -446,35 +643,112 @@ const Q=[
  ]
 },
 {
- id:"confidential", section:"company", track:"company", num:"Question 12", tag:"Watch closely", priority:false,
+ id:"confidential", track:"iba", num:"Question 8", tag:"Watch closely", priority:false,
  title:"What does the deal say about secrecy — and can you still speak freely?",
  why:"Confidentiality is the <strong>single biggest constraint in this whole field</strong>. Some secrecy protects your negotiating position — but blanket confidentiality stops you comparing your deal to others, and the worst agreements include a <span class='term' data-g='gag clause'>gag clause</span>. In the documented Pinehouse case, the community agreed not to say anything that opposed the mine — and members saw only a summary before signing.",
  opts:[
   {k:"open",label:"Mostly open — only specific financial figures kept private",desc:"You can share the terms with advisors and other Nations; only dollar amounts are redacted."},
   {k:"standard",label:"Standard confidentiality, but we can still speak and oppose",desc:"The terms are private, but nothing stops your community from criticizing or opposing the project."},
-  {k:"gag",label:"There's a no-opposition or non-disparagement clause",desc:"The deal asks your community not to oppose, interfere with, or speak against the project."},
-  {k:"unknown",label:"I'm not sure what the confidentiality terms are",desc:"We haven't reviewed this part closely."}
+  {k:"gag",label:"There's a no-opposition or non-disparagement clause",desc:"The deal asks your community not to oppose, interfere with, or speak against the project."}
  ]
 },
+/* ===== TRACK: crownFed — The Crown (Federal). Federal participation framed by
+        *Reference re IAA* 2023 SCC 23 (designated-projects scheme narrowed —
+        many wholly-in-province mines may now fall outside federal assessment),
+        plus the federal UNDA. The shared foundation (rights, consult) is also
+        walked here (listed in crownFed.questionIds) but answered once. ===== */
 {
- id:"cumulative", section:"company", track:"company", num:"Question 13", tag:"Bigger picture", priority:false,
- title:"What about the impact of all the other projects too?",
- why:"A single agreement can only deal with one project. But the harm to your territory builds up across <strong>all</strong> the development on it — roads, cutblocks, wells, mines. In <span class='term' data-g='Yahey'>Yahey</span> (Blueberry River), a court found this <span class='term' data-g='cumulative effects'>build-up</span> broke Treaty 8 rights once 85% of the territory sat within 250 metres of a disturbance. The settlement capped new disturbance at 750 hectares a year. This is a Crown land-management and treaty responsibility — it can't be fixed inside one IBA.",
+ id:"federal", track:"crownFed", num:"Question 1", tag:"Does it apply?", priority:false,
+ title:"Does a federal assessment even apply — and is Canada at the table?",
+ why:"Start with whether Canada is involved at all. In <span class='term' data-g='Reference re IAA'>Reference re IAA (2023)</span> the Supreme Court struck down most of the federal <span class='term' data-g='Impact Assessment Act'>Impact Assessment Act</span>'s “designated projects” scheme as overreaching provincial jurisdiction; the 2024 amendments narrowed it to projects with real <strong>federal effects</strong> (fisheries, migratory birds, federal lands, interprovincial or international impacts, federal funding). Many <strong>wholly-in-province mines now fall outside</strong> federal assessment — so the federal track may simply not engage. Where it does, the federal process can help discharge Canada's <span class='term' data-g='duty to consult'>duty to consult</span> only if it's adequate and Canada says it's relying on it.",
  opts:[
-  {k:"linked",label:"We track it — the deal links to regional, Nation-led monitoring",desc:"This project is being weighed against the wider load on our territory, with our own data."},
-  {k:"aware",label:"We're aware of it but it's not built into anything yet",desc:"We know the territory is under pressure, but nothing formal captures the combined impact."},
-  {k:"single",label:"We're only looking at this one project",desc:"The combined effect of all development hasn't been part of the conversation."}
+  {k:"federal-in",label:"Yes — there are clear federal effects, and Canada is assessing",desc:"Fisheries, migratory birds, federal lands, a federal funding/permit, or cross-border impacts bring this onto the federal designated-projects list, and a federal impact assessment is underway."},
+  {k:"unclear",label:"Unsure — it isn't clear whether the federal Act applies",desc:"After the 2023 reference and 2024 amendments, whether this project is “designated” and has federal effects hasn't been determined."},
+  {k:"province-only",label:"No — this looks like a wholly-in-province project (BC only)",desc:"No obvious federal trigger, so the project is likely assessed by BC alone. The federal duty-to-consult floor can still apply to any federal permit, but there may be no federal assessment."}
  ]
 },
 {
- id:"equity", section:"company", track:"company", num:"Question 14", tag:"Ownership", priority:false,
+ id:"unda", track:"crownFed", num:"Question 2", tag:"Federal UNDRIP", priority:false,
+ title:"Is Canada meeting its federal UNDRIP commitments here?",
+ why:"Canada's <span class='term' data-g='UNDA'>UN Declaration Act</span> (2021) commits the federal government to align its laws with <span class='term' data-g='UNDRIP'>UNDRIP</span> and to a national action plan — a federal counterpart to BC's <span class='term' data-g='DRIPA'>DRIPA</span>. Its “consult and cooperate” duty is distinct from the constitutional duty to consult and isn't yet settled by the courts, but it shapes how federal decision-makers should engage you. Where a federal assessment or permit is in play, this is the federal lever to invoke.",
+ opts:[
+  {k:"engaged",label:"Yes — Canada is engaging us consistent with UNDRIP",desc:"Federal decision-makers are consulting and cooperating in line with the UN Declaration Act and its action plan, not just the bare legal minimum."},
+  {k:"minimal",label:"Only the bare legal minimum",desc:"There's some federal contact, but it doesn't reflect the consent-seeking, cooperative standard the UN Declaration Act points to."},
+  {k:"none-fed",label:"No federal engagement — or none applies here",desc:"Canada isn't engaging us on UNDRIP grounds, or there's no federal decision in play to trigger it."}
+ ]
+},
+/* ===== TRACK: crownProv (continued) — cumulative closes the Provincial branch.
+        Q13 (cumulative) moved into the Crown track, homed on the PROVINCIAL
+        branch (Yahey/Treaty-8 cumulative is provincial land-management, Bucket
+        8 / A6 / DL-0025). Carries the Crown cumulative preamble (D6). ===== */
+{
+ id:"cumulative", track:"crownProv", num:"Question 5", tag:"Bigger picture", priority:false,
+ title:"Is the build-up of all development being weighed — not just this project?",
+ why:"A single approval looks at one project, but the harm to your territory <strong>builds up</strong> across everything on it — roads, cutblocks, wells, mines — together with natural processes and the added pressure of a changing climate. Weighing that whole load is a <strong>Crown land-management and treaty responsibility</strong>, not something one company deal can fix. In <span class='term' data-g='Yahey'>Yahey</span> (Blueberry River), a court found this <span class='term' data-g='cumulative effects'>build-up</span> broke Treaty 8 rights once 85% of the territory sat within 250 metres of a disturbance; the settlement capped new disturbance at 750 hectares a year.",
+ opts:[
+  {k:"linked",label:"Yes — the Crown weighs it through regional, Nation-led assessment",desc:"This project is being measured against the wider load on our territory — resource projects, natural change, and climate pressure — with our own data feeding a regional or strategic assessment."},
+  {k:"aware",label:"We're aware of it but nothing formal captures it",desc:"We know the territory is under pressure, but no regional assessment or disturbance threshold counts the combined impact."},
+  {k:"single",label:"Only this one project is being looked at",desc:"The combined effect of all development, natural processes, and climate hasn't been part of the conversation."}
+ ]
+},
+/* ===== TRACK: iba (continued) — equity closes the Company track ===== */
+{
+ id:"equity", track:"iba", num:"Question 9", tag:"Ownership", priority:false, naEligible:true,
  title:"Is ownership (equity) part of the deal?",
- why:"<span class='term' data-g='equity'>Equity</span> can turn your Nation from benefit-seeker into owner with real upside — like the Haisla's 50.1% of Cedar LNG. But it does <strong>not</strong> by itself deliver environmental, closure, or bankruptcy protection, and it can create a conflict between protecting your territory and wanting the project to succeed.",
+ why:"<span class='term' data-g='equity'>Equity</span> can turn your Nation from benefit-seeker into owner with real upside — like the Haisla's 50.1% of Cedar LNG. But it does <strong>not</strong> by itself deliver environmental, closure, or bankruptcy protection, and it can create a conflict between protecting your territory and wanting the project to succeed. Weigh it as the investment it is. Many of these stakes are <strong>low-return</strong> relative to their risk, and revenue can be a decade or more away. Every dollar tied up in this project is a dollar not invested elsewhere — that's the <strong>opportunity cost</strong>. And concentrating the Nation's wealth in one project on your own territory is the opposite of <strong>diversification</strong>: don't put all your eggs in one basket.",
  opts:[
   {k:"yes-protected",label:"Yes — and we'd keep independent protections too",desc:"We're considering ownership while keeping separate monitoring, closure, and consent rights."},
   {k:"yes-only",label:"Yes — ownership is the main benefit on offer",desc:"Equity is being framed as the deal; protections are less developed."},
   {k:"no",label:"No equity — benefits only",desc:"This is a benefits agreement, not an ownership stake."},
   {k:"considering",label:"We're weighing whether to pursue it",desc:"Undecided about taking an ownership position."}
+ ]
+},
+/* ===== TRACK: mou — Early Agreement (MOU). The fourth independent track (D1).
+        Light, pre-project instruments — MOUs, communication/engagement and
+        exploration agreements, and capacity-funding agreements — that a Nation
+        should put in place BEFORE the proponent acts, so the ground rules are set
+        on the Nation's terms. Grounded in foundations_brief.md §1/§7 and the
+        Stage-1 recommendations, and the D7 Q6 IBA-vs-MOU-trigger guidance. ===== */
+{
+ id:"mouTrigger", track:"mou", num:"Question 1", tag:"Timing", priority:false, naEligible:true,
+ title:"Should an early agreement (MOU) be in place before this goes further?",
+ why:"There's an order to these instruments. A light <span class='term' data-g='MOU'>MOU</span> or early agreement comes <strong>first</strong> — it sets the ground rules for how you'll work together — and a full <span class='term' data-g='IBA'>IBA</span> comes later, once there's a real project to negotiate. The trigger for an early agreement is <strong>first contact</strong>: a company asking to explore, drill, or talk. The trigger for an IBA is a <strong>defined project</strong> heading into assessment or approval. The mistake to avoid is letting the proponent set the pace — the Nation should <strong>initiate the early agreement before the proponent acts</strong>, so the terms of engagement are yours, not theirs.",
+ opts:[
+  {k:"have",label:"Yes — we already have an MOU or early agreement in place",desc:"Ground rules for engagement are written down before any full IBA — communication, information-sharing, and protective language are set."},
+  {k:"early-now",label:"It's early — and we want to set the terms first",desc:"The company is at first contact or exploration; this is the moment to put an MOU in place before substantive talks begin."},
+  {k:"proponent-led",label:"The company is driving the process and we're reacting",desc:"Engagement is happening on the proponent's terms and timeline, without an early agreement framing it."},
+  {k:"skip-to-iba",label:"We're going straight to IBA talks with no early agreement",desc:"Substantive negotiation has started without first setting ground rules or protective language."}
+ ]
+},
+{
+ id:"mouInstrument", track:"mou", num:"Question 2", tag:"What you're signing", priority:false, naEligible:true,
+ title:"Which early-agreement instrument is on the table?",
+ why:"Early agreements come in a few forms, each doing slightly different work before any full <span class='term' data-g='IBA'>IBA</span>: a plain <span class='term' data-g='MOU'>MOU</span> setting ground rules; a <strong>communication / engagement</strong> agreement governing how you'll talk and share information; an <span class='term' data-g='exploration agreement'>exploration agreement</span> covering pre-project drilling and sampling; and a <span class='term' data-g='capacity funding'>capacity-funding</span> agreement paying for your own advisors. Whichever it is, it is a <strong>place-setter, not the main deal</strong> — and the right early instrument lets you secure protective language and funding cheaply, before leverage shifts.",
+ opts:[
+  {k:"mou-engage",label:"An MOU or communication / engagement agreement",desc:"A light agreement setting how you'll work together — meetings, a single point of contact, information-sharing — and ideally the protective language up front."},
+  {k:"exploration",label:"An exploration agreement (pre-project drilling / sampling)",desc:"Covers the company's early exploration work, with conditions, payments, and protections for this phase before any mine is proposed."},
+  {k:"capacity-fund",label:"A capacity-funding agreement",desc:"The company or government funds your own legal, financial, and technical advisors so you can review the project on equal footing."}
+ ]
+},
+{
+ id:"mouCapacity", track:"mou", num:"Question 3", tag:"Your readiness", priority:false, naEligible:true,
+ title:"Does the early agreement fund your own independent advisors?",
+ why:"The single most useful thing an early agreement can do is secure <span class='term' data-g='capacity funding'>capacity funding</span> — money to hire <strong>your own</strong> lawyers, financial advisors, and technical experts. In one survey <strong>71% of First Nations could not afford the experts</strong> needed to review a project. The discipline: the funds should come to <strong>your Nation</strong>, you should <strong>choose your own advisors</strong>, and the money should ideally come from the <strong>Crown</strong> — be wary of company-provided 'shared' experts, and treat the company picking your advisors as a red flag.",
+ opts:[
+  {k:"crown-own",label:"Yes — Crown-sourced funding, and we choose our own advisors",desc:"Capacity funding flows to the Nation, ideally from government, and we retain independent legal, financial, and technical experts of our own choosing."},
+  {k:"company-own",label:"Company-funded, but we still choose our own advisors",desc:"The proponent pays, but the funds come to us and we pick and instruct our own independent experts — kept at arm's length from the company."},
+  {k:"company-shared",label:"The company offers to share its own experts or pick ours",desc:"Funding comes with the company's preferred advisors attached, or the company proposes 'shared' technical work — a serious red flag."},
+  {k:"none",label:"No capacity funding — we're relying on the company's information",desc:"No early funding for independent advice; we'd be reviewing the project on the proponent's numbers alone."}
+ ]
+},
+{
+ id:"mouCautions", track:"mou", num:"Question 4", tag:"Watch closely", priority:false, naEligible:true,
+ title:"Does the early agreement protect your rights — and not quietly stand in for the bigger deals?",
+ why:"An early agreement should make two things explicit. First, <strong>negotiating is not consent</strong> and everything proceeds <span class='term' data-g='without prejudice'>without prejudice</span> to your rights — the leading practitioner guide opens with exactly this, and the language belongs at the front of any <span class='term' data-g='MOU'>MOU</span>. Second, the early agreement must not be allowed to quietly <strong>substitute</strong> for the things that come later: the company <span class='term' data-g='IBA'>IBA</span>, the Crown <span class='term' data-g='Section 7 agreement'>consent track</span>, and <span class='term' data-g='ECDA / revenue sharing'>government revenue sharing</span>. Watch for a proponent or regulator later citing your engagement or MOU as evidence of consent or completed consultation.",
+ opts:[
+  {k:"protected",label:"Yes — 'without prejudice' and 'not consent' are written in, and the bigger tracks are preserved",desc:"The agreement states plainly that talking isn't consent and waives nothing, and it doesn't displace the IBA, the consent agreement, or revenue sharing still to come."},
+  {k:"partial",label:"Some protective language, but it's thin or unclear",desc:"There's a gesture at non-waiver, but it isn't airtight, or it's silent on keeping the consent and revenue tracks separate."},
+  {k:"substituting",label:"It's being treated as the deal — or as our consent",desc:"The early agreement is standing in for the full IBA, the consent track, or revenue sharing, or our engagement is being read as agreement to the project."}
  ]
 }
 ];
@@ -505,25 +779,25 @@ const DETAILS={
   example:"ECDAs are in place at New Afton (the first, 2010), Mount Milligan (~$24M to Nak'azdli over the mine life), Mount Polley, and Elk Valley coal. The BC First Nations Gaming Revenue Sharing LP distributes ~7% of BCLC net income (~$3B over 25 years) by formula \u2014 a separate G2G model.",
   src:[["BC \u2014 ECDAs (program page)","https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/consulting-with-first-nations/first-nations-negotiations/economic-and-community-development-agreements"],["BC \u2014 Making Decisions Together (s.6/s.7 agreements)","https://www2.gov.bc.ca/gov/content/governments/indigenous-people/new-relationship/united-nations-declaration-on-the-rights-of-indigenous-peoples/making-decisions-together"],["Crown Obligations Research \u2014 Bucket 5",null]]},
  stage:{title:"Timing & leverage",
-  context:"Your leverage is highest before a project is approved \u2014 but that's also when you have the least information about real impacts. Later you know more but can demand less. Protections that matter decades out (closure, insolvency, consent over future changes) are the easiest to defer and the hardest to add after approval.",
+  context:"Your leverage is highest before a project is approved \u2014 but that's also when you have the least information about real impacts. Later you know more but can demand less. The government review and approval phase \u2014 permitting and Crown decisions \u2014 is a distinct moment: leverage is still real, but it falls with each approval granted. Protections that matter decades out (closure, insolvency, consent over future changes) are the easiest to defer and the hardest to add after approval.",
   why:"Sequencing shapes everything. The deferral trap is real: operational benefits get negotiated up front while end-of-life protections are pushed off, and expansions later slip through on old approvals.",
   example:"The Mount Polley expansion was approved on a decades-old certificate, showing how changes can avoid fresh review \u2014 a reminder to treat any expansion as a new decision requiring new assessment and fresh consent.",
   src:[["IBA Community Toolkit (Gibson & O'Faircheallaigh) \u2014 timing","https://gordonfoundation.ca/resource/iba-community-toolkit/"],["CBC \u2014 Mount Polley dam-level challenge (2025)","https://www.cbc.ca/news/canada/british-columbia/first-nations-mount-polley-mine-challenge-1.7602652"],["IBA Comparative Analysis; Foundations Brief",null]]},
- instrument:{title:"The right instrument",
-  context:"A Nation often needs three different instruments doing different work: a consent / decision-making agreement with government (the power to decide), an ECDA (government revenue), and a company IBA (project benefits and protections). One cannot substitute for another.",
-  why:"Conflating them is a common and costly error \u2014 signing an IBA does not deliver consent or government revenue, and a consent agreement does not deliver jobs or contracting. Early, lighter agreements (MOUs, capacity-funding agreements) can set ground rules cheaply before a full IBA.",
-  example:"The Tahltan model separates the tracks cleanly: a Section 7 consent agreement with BC for decision-making, alongside project-specific arrangements \u2014 each instrument handling what it is designed for.",
-  src:[["IBA Community Toolkit \u2014 \u201CNegotiation is Not Consent\u201D","https://gordonfoundation.ca/resource/iba-community-toolkit/"],["Benefit Agreements: A Wayfinding Guide (FNNGA)","https://fnnga.com/benefit-agreements/"],["Foundations Brief \u2014 instrument types",null]]},
+ instrument:{title:"IBA vs. MOU \u2014 and when each belongs",
+  context:"Two different instruments do the project-benefit work, at two different moments. An early agreement (an MOU, a communication/engagement agreement, an exploration agreement, or a capacity-funding agreement) is the place-setter: its trigger is first contact \u2014 a company asking to explore, drill, or talk \u2014 and it sets ground rules and protective language while leverage is highest and before substantive terms are on the table. A full IBA is the main deal: its trigger is a defined project heading into assessment or approval, and it locks in money, jobs, contracting, environmental and closure protections, and enforcement. (Separate again is the power to say yes or no to the project itself \u2014 that is a Crown consent / decision-making agreement, handled in the Crown track of this tool, not by either instrument here.)",
+  why:"Sequencing, and who sets the pace, decide a lot. The costly errors are two: going straight to IBA talks with no early agreement \u2014 forfeiting the cheapest chance to lock in non-waiver / 'without prejudice' language and capacity funding before leverage shifts \u2014 and letting the proponent drive the timeline so engagement happens on the company's terms. A Nation that initiates the early agreement before the proponent acts controls the terms of engagement: communication ground rules, information-sharing, capacity funding, and protective language. And one instrument cannot substitute for another \u2014 an IBA delivers neither consent nor government revenue, so a Nation pursuing benefits should still pursue an ECDA and, in the Crown track, a consent agreement in parallel.",
+  example:"Practitioner guidance treats pre-project agreements (MOUs, exploration, communication, and capacity-funding agreements) as the natural first step, before any full IBA, with timing strategic: pre-assessment agreements carry more leverage but less impact information, while later agreements reverse that trade-off. The discipline is to put an MOU in place \u2014 on the Nation's initiative \u2014 before the proponent's process narrows the negotiating window, and to keep the early agreement clearly separate from the IBA, consent, and revenue tracks so one light instrument doesn't quietly displace three later ones.",
+  src:[["IBA Community Toolkit \u2014 sequencing, timing & \u201CNegotiation is Not Consent\u201D","https://gordonfoundation.ca/resource/iba-community-toolkit/"],["Benefit Agreements: A Wayfinding Guide (FNNGA)","https://fnnga.com/benefit-agreements/"],["Foundations Brief \u2014 instrument types; \u00A77 pre-project agreements; Stage-1 (initiate before the proponent acts)",null]]},
  capacity:{title:"Your independent capacity",
   context:"Capacity means your own legal, financial, and technical advisors \u2014 independent of the company. Capacity funding to pay for them can often be required from the proponent or government, especially through participant-funding provisions in the assessment.",
   why:"In one survey 71% of First Nations could not afford the experts needed to review a project's impacts. Negotiating on the company's numbers alone is the most common way Nations end up in weak agreements. An independent reclamation-cost estimate, in particular, is decisive for closure terms.",
   example:"The federal Impact Assessment process and BC's EAA18 both include participant-funding mechanisms; FNMPC offers free advisory services. These let a Nation produce its own analysis rather than react to the proponent's.",
   src:[["FNMPC \u2014 advisory services & capacity","https://fnmpc.ca/"],["IISD/IGF \u2014 financial assurance guidance (cost estimates)","https://www.iisd.org/publications/report/financial-assurance-mine-closure-reclamation"],["Foundations Brief; Comparative Analysis",null]]},
  closure:{title:"Closure & end-of-life (priority)",
-  context:"Closure is the permanent end of a project \u2014 most dangerous as a sudden shutdown from insolvency before a funded plan is in place. Government-held reclamation security is meant to be the backstop, but in BC it has run large shortfalls and is held by the Chief Inspector of Mines, not the Nation.",
-  why:"This is the field's biggest documented gap: in one study of 50 agreements, only 7 addressed closure substantively. BC carried roughly a $1.1B reclamation-security shortfall (2020 figures); a 2024 investigation reported a ~$753M gap in one year. Redwater confirms clean-up ranks ahead of creditors in bankruptcy \u2014 but that is worthless if the estate is empty, which is why up-front, hard-form security is the only reliable protection.",
+  context:"Closure is the permanent end of a project \u2014 most dangerous as a sudden shutdown from insolvency before a funded plan is in place. Government-held reclamation security is meant to be the backstop, but in BC it has run large shortfalls and is held by the Chief Inspector of Mines, not the Nation. The right order is to assess what government is already doing \u2014 does the Crown hold enough hard-form security for full-life reclamation? \u2014 and then use the IBA to fill the gap only where it isn't doing enough, rather than duplicating a backstop that already exists.",
+  why:"This is the field's biggest documented gap: in one study of 50 agreements, only 7 addressed closure substantively. BC carried roughly a $1.1B reclamation-security shortfall (2020 figures); a February 2024 Narwhal / Globe and Mail investigation reported a ~$753M gap as of March 31, 2023 (against an estimated ~$4.1B total liability), and noted BC lets some mines count in-ground reserves toward their security \u2014 and BC's Public Interest Bonding Strategy reform remains paused (re-verified June 2026). Redwater confirms clean-up ranks ahead of creditors in bankruptcy \u2014 but that is worthless if the estate is empty, which is why up-front, hard-form security is the only reliable protection. A note on equity: an ownership stake at this stage can expose the Nation to closure and reclamation liability as a part-owner and creates a built-in pull toward keeping the project running, which works against pressing hard on closure.",
   example:"At the abandoned Tulsequah Chief mine the province held under 1% of the estimated reclamation cost, leaving acid drainage for decades. By contrast, strong agreements (Opinagow; Argyle's dual trust) put closure in its own chapter with funded, consent-based clean-up.",
-  src:[["Orphan Well Assn v Grant Thornton (Redwater), 2019 SCC 5","https://www.canlii.org/en/ca/scc/doc/2019/2019scc5/2019scc5.html"],["O'Faircheallaigh & Lawrence (2019) \u2014 \u201C7 of 50\u201D","https://search.informit.org/doi/10.3316/informit.531380779157934"],["BC Major Mines Reclamation Security Policy (Interim, 2022)","https://www2.gov.bc.ca/assets/gov/farming-natural-resources-and-industry/mineral-exploration-mining/documents/reclamation-and-closure/major_mines_reclamation_security_policy_interim_v1_05apr2022.pdf"],["The Narwhal / Globe & Mail (2024) \u2014 ~$753M shortfall",null],["Crown Obligations Research \u2014 Bucket 7",null]]},
+  src:[["Orphan Well Assn v Grant Thornton (Redwater), 2019 SCC 5","https://www.canlii.org/en/ca/scc/doc/2019/2019scc5/2019scc5.html"],["O'Faircheallaigh & Lawrence (2019) \u2014 \u201C7 of 50\u201D","https://search.informit.org/doi/10.3316/informit.531380779157934"],["BC Major Mines Reclamation Security Policy (Interim, 2022)","https://www2.gov.bc.ca/assets/gov/farming-natural-resources-and-industry/mineral-exploration-mining/documents/reclamation-and-closure/major_mines_reclamation_security_policy_interim_v1_05apr2022.pdf"],["BC Public Interest Bonding Strategy (paused; re-verified June 2026)","https://www2.gov.bc.ca/gov/content/environment/waste-management/public-interest-bonding-strategy"],["The Narwhal / Globe & Mail (Feb. 21, 2024) \u2014 ~$753M shortfall (FY 2022\u201323)","https://thenarwhal.ca/bc-mining-liabilities-cleanup-costs-taxpayers/"],["Crown Obligations Research \u2014 Bucket 7",null]]},
  environment:{title:"Environmental monitoring",
   context:"The strongest agreements fund Indigenous monitors with real site access and the authority to require action \u2014 not just a shared committee or reliance on company self-reporting. Monitoring works when it is funded and staffed over the full life of the project.",
   why:"Self-reporting misses problems early; independent monitors catch them. The power to trigger mitigation, not merely observe, is what gives monitoring teeth.",
@@ -549,19 +823,48 @@ const DETAILS={
   why:"Project-by-project assessment systematically ignores the additive burden. For Treaty 8 Nations, Yahey provides direct leverage; for others, the route is a regional or strategic assessment and enforceable disturbance thresholds.",
   example:"In Yahey (2021) the court found that by 2018, 85% of the Blueberry River claim area sat within 250 m of a disturbance (91% within 500 m) \u2014 enough to unjustifiably infringe Treaty 8 rights. The settlement capped new disturbance at 750 ha/year and created a $200M restoration fund.",
   src:[["Yahey v BC, 2021 BCSC 1287","https://www.canlii.org/en/bc/bcsc/doc/2021/2021bcsc1287/2021bcsc1287.html"],["Blueberry River Implementation Agreement (2023)",null],["Crown Obligations Research \u2014 Bucket 8",null]]},
+ federal:{title:"Does a federal assessment apply?",
+  context:"The federal Impact Assessment Act (2019) runs a \u201cdesignated projects\u201d scheme deciding which large projects get a federal impact assessment, on top of the province's own review. After the 2023 Supreme Court reference and the 2024 amendments, that scheme reaches only projects with real, non-negligible effects within federal jurisdiction \u2014 fisheries, migratory birds, federal lands, interprovincial or international impacts, or a federal permit or funding. So the first federal question is simply whether the Act applies at all.",
+  why:"In Reference re Impact Assessment Act (2023 SCC 23) the Court held the designated-projects scheme largely unconstitutional for reaching too far into provincial jurisdiction; Canada narrowed it by amendments in force June 20, 2024. The practical effect is that many wholly-in-province mines now fall outside federal assessment \u2014 in which case the provincial track is the main arena. Where the Act does apply, the federal process can help discharge Canada's duty to consult only if Canada says it is relying on it and the process is adequate (the Clyde River standard).",
+  example:"In Clyde River (2017) the Supreme Court quashed a federal regulatory approval because the process lacked oral hearings, participant funding, and a focus on treaty rights; in the companion Chippewas case a similar process was upheld because it had those features. The lesson for the federal track: reliance-on-process consultation only counts when the process is genuinely adequate.",
+  src:[["Reference re Impact Assessment Act, 2023 SCC 23","https://www.canlii.org/en/ca/scc/doc/2023/2023scc23/2023scc23.html"],["Impact Assessment Act, SC 2019, c. 28 (as amended 2024)","https://laws-lois.justice.gc.ca/eng/acts/I-2.75/FullText.html"],["Clyde River v Petroleum Geo-Services, 2017 SCC 40","https://www.canlii.org/en/ca/scc/doc/2017/2017scc40/2017scc40.html"],["Crown Obligations Research \u2014 Bucket 6 (federal)",null]]},
+ unda:{title:"Canada's federal UNDRIP commitments",
+  context:"Canada's UN Declaration Act (UNDA, 2021) is the federal counterpart to BC's DRIPA. It commits the federal government to align its laws with UNDRIP and to deliver a national action plan (released June 21, 2023, with 181 measures). Its \u201cconsult and cooperate\u201d obligation is distinct from the constitutional duty to consult \u2014 a separate, federal lever \u2014 and applies where a federal assessment, permit, or funding decision is in play.",
+  why:"UNDA's \u201cconsult and cooperate\u201d standard is not yet settled by the courts, so its precise legal force is uncertain \u2014 but it shapes how federal decision-makers are expected to engage, pointing past the bare legal minimum toward cooperative, consent-seeking engagement. Where Canada is at the table, this is the federal instrument to invoke; where no federal decision is engaged, it simply doesn't apply, and the provincial DRIPA track carries the consent question.",
+  example:"The federal UN Declaration Act Action Plan (2023) sets out 181 measures led by more than 25 departments \u2014 the concrete commitments a Nation can hold federal decision-makers to. UNDA mirrors, at the federal level, the consent-based direction that DRIPA's section 7 agreements give in BC, though without BC's specific consent-agreement mechanism.",
+  src:[["UN Declaration on the Rights of Indigenous Peoples Act, SC 2021, c. 14","https://laws-lois.justice.gc.ca/eng/acts/U-2.2/FullText.html"],["UN Declaration Act Action Plan (2023)","https://www.justice.gc.ca/eng/declaration/ap-pa/index.html"],["Crown Obligations Research \u2014 Bucket 4 (federal UNDA)",null]]},
  equity:{title:"Equity / ownership",
-  context:"Equity turns a Nation from benefit-seeker into part-owner with real upside \u2014 but it carries financial risk, a decade-plus wait for revenue, and a built-in tension between protecting territory and wanting the project to succeed. It does not, by itself, deliver environmental, closure, or bankruptcy protection.",
-  why:"Equity should sit on top of strong protection clauses, never replace them. Federal tools now lower the cost of taking a stake, but the protection questions in the rest of this summary still have to be answered independently.",
+  context:"Equity turns a Nation from benefit-seeker into part-owner with real upside \u2014 but it carries financial risk, a decade-plus wait for revenue, and a built-in tension between protecting territory and wanting the project to succeed. It does not, by itself, deliver environmental, closure, or bankruptcy protection, and it should be weighed like any other investment: against its risk-adjusted return, its opportunity cost, and how concentrated it leaves the Nation's wealth.",
+  why:"Equity should sit on top of strong protection clauses, never replace them. Federal tools now lower the cost of taking a stake, but the protection questions in the rest of this summary still have to be answered independently. Weigh three financial cautions: many of these stakes are low-return relative to their risk, with revenue often a decade or more away; every dollar committed here is a dollar not invested elsewhere (the opportunity cost); and a large stake in a single project on your own territory is poorly diversified \u2014 concentrating wealth and risk in one place rather than spreading it. Independent financial advice on the project's economics, produced by the Nation's own experts, is what lets a Nation judge whether the return justifies the commitment.",
   example:"The Haisla hold 50.1% of Cedar LNG \u2014 the first Indigenous-majority LNG project \u2014 financed in part by a C$1.4B FNFA loan. The federal Indigenous Loan Guarantee Program ($10B, sector-agnostic since 2025) backed 36 BC First Nations' stake in Enbridge's Westcoast pipeline.",
-  src:[["Cedar LNG \u2014 FID (Haisla 50.1%)","https://www.cedarlng.com/cedar-lng-announces-positive-final-investment-decision/"],["CDEV \u2014 Indigenous Loan Guarantee Program","https://cdev.gc.ca/indigenous-loan-guarantee-program/"],["RBC \u2014 Nations Building (loan-guarantee context)","https://www.rbc.com/en/thought-leadership/indigenous/nations-building-assessing-indigenous-loan-guarantee-programs-in-canadas-new-project-wave-2/"]]}
+  src:[["Cedar LNG \u2014 FID (Haisla 50.1%)","https://www.cedarlng.com/cedar-lng-announces-positive-final-investment-decision/"],["CDEV \u2014 Indigenous Loan Guarantee Program","https://cdev.gc.ca/indigenous-loan-guarantee-program/"],["RBC \u2014 Nations Building (loan-guarantee context)","https://www.rbc.com/en/thought-leadership/indigenous/nations-building-assessing-indigenous-loan-guarantee-programs-in-canadas-new-project-wave-2/"]]},
+ mouTrigger:{title:"When an MOU belongs \u2014 and the triggers",
+  context:"Lighter instruments come before a full IBA: MOUs, communication/engagement agreements, exploration agreements, and capacity-funding agreements. The trigger for an early agreement is first contact \u2014 a company asking to explore, drill, or talk; the trigger for an IBA is a defined project heading into assessment or approval. An early agreement sets ground rules cheaply, while leverage is still high and before substantive terms are on the table.",
+  why:"Sequencing and who sets the pace decide a lot. A Nation that initiates the early agreement before the proponent acts controls the terms of engagement \u2014 communication, information-sharing, capacity funding, and the protective 'without prejudice' language \u2014 rather than reacting to the company's process. Going straight to IBA talks with no early agreement forfeits the cheapest chance to lock in non-waiver language and funding.",
+  example:"Practitioner guidance treats pre-project agreements (MOUs, exploration and communication agreements, capacity-funding agreements) as the natural first step, with timing strategic: pre-assessment agreements carry more leverage but less impact information, while later agreements reverse that trade-off. The early agreement is where ground rules and protections are set before the negotiating window narrows.",
+  src:[["IBA Community Toolkit (Gibson & O'Faircheallaigh) \u2014 sequencing & timing","https://gordonfoundation.ca/resource/iba-community-toolkit/"],["Benefit Agreements: A Wayfinding Guide (FNNGA)","https://fnnga.com/benefit-agreements/"],["Foundations Brief \u2014 \u00a77 pre-project agreements; Stage-1 recommendations",null]]},
+ mouInstrument:{title:"The right early instrument",
+  context:"Early agreements come in a few forms doing slightly different work: a plain MOU setting ground rules; a communication/engagement agreement governing meetings, a single point of contact, and information-sharing; an exploration agreement covering pre-project drilling and sampling; and a capacity-funding agreement paying for the Nation's own advisors. Each is a place-setter before a full IBA, not the main deal.",
+  why:"Choosing the right early instrument lets a Nation secure protective language and funding cheaply, before leverage shifts. A communication/engagement agreement can head off 'divide and conquer' dynamics by fixing a single point of contact and information flow; an exploration agreement puts conditions on early ground-disturbing work; a capacity-funding agreement resources independent review. None of them authorizes the project or substitutes for the IBA or the consent track.",
+  example:"The Foundations Brief lists MOUs, exploration agreements, communication/engagement agreements, and capacity-funding agreements as the lighter instruments that precede a full IBA. Communication provisions specifically aim to prevent divide-and-conquer dynamics and sustain the relationship over a project's life \u2014 work an early agreement can start before any benefits are negotiated.",
+  src:[["Foundations Brief \u2014 \u00a77 (instrument types) & \u00a73(g) communication provisions",null],["Benefit Agreements: A Wayfinding Guide (FNNGA)","https://fnnga.com/benefit-agreements/"],["IBA Community Toolkit \u2014 agreement types","https://gordonfoundation.ca/resource/iba-community-toolkit/"]]},
+ mouCapacity:{title:"Capacity funding, done right",
+  context:"Capacity funding is money to hire the Nation's own legal, financial, and technical advisors. Secured early \u2014 through an MOU or capacity-funding agreement \u2014 it is the most reliable lever a Nation controls. The discipline is in the details: the funds should flow to the Nation, the Nation should choose and instruct its own advisors, and the money should ideally come from the Crown rather than the proponent.",
+  why:"In one survey 71% of First Nations could not afford the experts needed to review a project's impacts \u2014 the most common way Nations end up in weak agreements. Company-provided or 'shared' experts carry a conflict: advice paid for and chosen by the proponent is not independent. Crown-sourced funding (participant funding in the assessment, for instance) keeps the advice at arm's length; the company picking your advisors is a clear red flag.",
+  example:"BC's EAA18 and the federal Impact Assessment process both include participant-funding mechanisms, and FNMPC offers free advisory services \u2014 routes to Crown- or coalition-sourced capacity rather than proponent-controlled advice. Independent reclamation-cost and project-economics estimates, produced by the Nation's own experts, are what let a Nation negotiate against the company's numbers instead of reacting to them.",
+  src:[["FNMPC \u2014 advisory services & capacity","https://fnmpc.ca/"],["IBA Community Toolkit \u2014 capacity & independent advice","https://gordonfoundation.ca/resource/iba-community-toolkit/"],["Foundations Brief \u2014 Stage-1 (build capacity first); FNMPC 71% finding",null]]},
+ mouCautions:{title:"Negotiation is not consent",
+  context:"An early agreement must make two things explicit. First, that negotiating is not consent and everything proceeds without prejudice to the Nation's rights \u2014 the leading practitioner guide opens with exactly this principle. Second, that the early agreement does not substitute for the instruments still to come: the company IBA (benefits and protections), the Crown consent track (a Section 7 or treaty consent agreement), and government revenue sharing (an ECDA or equivalent).",
+  why:"The most serious risk in this whole field is a signed agreement being treated as evidence of consent or of completed consultation. Putting 'without prejudice to our rights and consent' and 'negotiation is not consent' at the front of any MOU keeps the Nation's legal position intact, and keeping the early agreement clearly separate from the IBA, consent, and revenue tracks stops one light instrument from quietly displacing three later ones. Watch for a proponent or regulator citing engagement or an MOU as consent.",
+  example:"The IBA Community Toolkit opens with 'Negotiation is Not Consent,' and the Foundations Brief's Stage-1 recommendation is to put non-waiver and 'without prejudice to rights and consent' language at the front of any MOU or IBA, and to escalate immediately if a proponent or regulator begins citing engagement or IBA negotiation as evidence of consent or consultation.",
+  src:[["IBA Community Toolkit \u2014 \u201cNegotiation is Not Consent\u201d","https://gordonfoundation.ca/resource/iba-community-toolkit/"],["Foundations Brief \u2014 Stage-1 (non-waiver / 'without prejudice'); \u00a71 (IBA is not consent)",null],["Benefit Agreements: A Wayfinding Guide (FNNGA) \u2014 consent risk","https://fnnga.com/benefit-agreements/"]]}
 };
 
 const RULES={
  rights:{
   title:{flag:"strong",crit:"Rights & title (Crown)",your:"You hold <b>established title or a modern treaty</b> — the strongest possible footing. The Crown needs your consent or must meet a strict justification test to proceed.",ask:"Insist the Crown treat this as a consent matter, not mere consultation. With title established, a project begun without your consent can later be challenged. Have counsel confirm the Crown's justification burden."},
   treaty8:{flag:"strong",crit:"Rights & title (Crown)",your:"You hold <b>historic treaty rights</b> — which, after Yahey, give real leverage over the build-up of development on your territory.",ask:"Use the Yahey precedent directly: require the Crown to assess this project against total territorial disturbance and to honour treaty thresholds. Treaty 8 Nations have the strongest cumulative-effects leverage in the country."},
-  "strong-asserted":{flag:"watch",crit:"Rights & title (Crown)",your:"You have a <b>strong asserted claim, unproven in court</b> — the norm in BC. A strong claim plus serious impact means deep consultation is owed.",ask:"Document the strength of your claim and the seriousness of the impact early — together they set how much the Crown owes you. Consider whether to pursue a consent agreement or, in the right case, a title claim."},
-  unsure:{flag:"gap",crit:"Rights & title (Crown)",your:"The <b>strength of your claim hasn't been assessed</b> — and it's the foundation of all your leverage.",ask:"Make this the first piece of work: have counsel assess the strength of your title/rights claim and whether your territory is treaty or unceded. Everything else — consultation depth, consent, leverage — flows from it."}
+  "strong-asserted":{flag:"watch",crit:"Rights & title (Crown)",your:"You have a <b>strong asserted claim, unproven in court</b> — the norm in BC. A strong claim plus serious impact means deep consultation is owed.",ask:"Document the strength of your claim and the seriousness of the impact early — together they set how much the Crown owes you. Consider whether to pursue a consent agreement or, in the right case, a title claim."}
  },
  consult:{
   direct:{flag:"strong",crit:"Duty to consult (Crown)",your:"The government is <b>consulting you directly and meaningfully</b> — as the honour of the Crown requires.",ask:"Keep it about your rights and title, not just environmental effects, and keep a written record. Confirm in writing whether the Crown is relying on the company for any part of consultation."},
@@ -572,25 +875,22 @@ const RULES={
  consent:{
   yes:{flag:"strong",crit:"Consent status (Crown)",your:"A <b>consent agreement or treaty makes your 'yes' binding</b> — the strongest position a Nation can hold, like the Tahltan model.",ask:"Make sure the agreement doesn't limit the grounds on which you can withhold consent, and that it covers this specific decision. This is what turns consultation into real decision-making power — protect it."},
   seeking:{flag:"watch",crit:"Consent status (Crown)",your:"You're <b>pursuing consent-based decision-making</b> but it isn't signed.",ask:"Press to finalize a Section 7 consent agreement before key approvals are made. Until it's signed, the minister can still decide without you — timing matters."},
-  "ea-only":{flag:"watch",crit:"Consent status (Crown)",your:"You rely on the <b>assessment process, where the minister keeps the final say</b> even over your objection.",ask:"Use the notice-of-consent steps deliberately — a documented lack of consent forces ministerial reasons and preserves your judicial-review options. Seriously consider negotiating a Section 7 consent agreement to make your consent binding."},
-  unsure:{flag:"gap",crit:"Consent status (Crown)",your:"Your <b>consent status is unclear</b> — and it's the single biggest factor in whether your 'no' has legal weight.",ask:"Have counsel clarify immediately whether any decision legally requires your consent, and whether a Section 7 agreement is available. Don't assume the assessment process gives you a veto — without a consent agreement, it doesn't."}
+  "ea-only":{flag:"watch",crit:"Consent status (Crown)",your:"You rely on the <b>assessment process, where the minister keeps the final say</b> even over your objection.",ask:"Use the notice-of-consent steps deliberately — a documented lack of consent forces ministerial reasons and preserves your judicial-review options. Seriously consider negotiating a Section 7 consent agreement to make your consent binding."}
  },
  revenue:{
   both:{flag:"strong",crit:"Crown revenue sharing",your:"You're pursuing <b>government revenue sharing alongside the IBA</b> — the right approach; the two are separate and additive.",ask:"Confirm the rates are current and that the revenue agreement also addresses how BC will meet its consultation duty for permitting. Note quantum matters — one study found revenue sharing alone didn't move community well-being."},
-  "iba-only":{flag:"gap",crit:"Crown revenue sharing",your:"You're <b>only dealing with the company</b> — likely leaving the government's revenue share on the table.",ask:"Check whether an ECDA (mine) or revenue-sharing agreement (forestry) applies and pursue it in parallel. This is provincial money separate from anything the company pays — a Nation should usually have both."},
-  unsure:{flag:"watch",crit:"Crown revenue sharing",your:"You <b>haven't checked</b> whether a Crown revenue share applies.",ask:"Ask the province directly whether an ECDA or revenue-sharing agreement is available for this project. It's a government-to-government entitlement that's easy to overlook and doesn't reduce your company deal."}
+  "iba-only":{flag:"gap",crit:"Crown revenue sharing",your:"You're <b>only dealing with the company</b> — likely leaving the government's revenue share on the table.",ask:"Check whether an ECDA (mine) or revenue-sharing agreement (forestry) applies and pursue it in parallel. This is provincial money separate from anything the company pays — a Nation should usually have both."}
  },
  stage:{
   early:{flag:"strong",crit:"Timing & leverage",your:"You're early — <b>this is when your leverage is highest</b>.",ask:"Lock in the hard protections now (closure, bankruptcy, change-of-control). They are almost never added later. Secure capacity funding before serious talks begin."},
+  govreview:{flag:"watch",crit:"Timing & leverage",your:"The project is in <b>government review and approval processes</b> — permits and Crown decisions are being prepared. You still have real leverage, but each approval narrows the window.",ask:"Engage the Crown directly on consent and consultation now, before approvals are granted — a documented lack of consent at this stage preserves your options. Get the hard protections (closure, insolvency, consent over future changes) settled before any decision issues; they are far harder to add once permits are in hand."},
   ea:{flag:"watch",crit:"Timing & leverage",your:"The project is in <b>environmental assessment</b> — register as a participating Nation and keep that role separate from any benefit deal.",ask:"Engage fully in the assessment in parallel. Do not let negotiating an IBA substitute for your role in the public review or for the government's duty to consult."},
   negotiating:{flag:"watch",crit:"Timing & leverage",your:"You're negotiating now — <b>still good leverage, but the window is closing</b>.",ask:"Prioritize the protections that are hardest to add later: closure, insolvency, and consent over future changes. Get independent cost estimates before agreeing to financial terms."},
   operating:{flag:"gap",crit:"Timing & leverage",your:"The project already exists — <b>your leverage is lowest here</b>, and expansions can slip through on old approvals.",ask:"Treat any expansion or change as a fresh decision: demand a new assessment and fresh consent. The Mount Polley expansion showed changes can be approved on a decades-old certificate."}
  },
  instrument:{
-  iba:{flag:"watch",crit:"The right instrument",your:"A <b>company IBA</b> handles benefits and protections — but it does <b>not</b> give consent or replace government revenue-sharing.",ask:"Make sure you also have (or are pursuing) a government revenue-sharing agreement (ECDA) and a consent/decision-making agreement. Each does different work."},
-  "early-agree":{flag:"strong",crit:"The right instrument",your:"An <b>early agreement</b> is the right tool for this stage — and a chance to set ground rules cheaply.",ask:"Use it to secure capacity funding and put 'negotiating is not consent' and 'without prejudice to our rights' language in writing from the very start."},
-  consent:{flag:"strong",crit:"The right instrument",your:"A <b>consent agreement with government</b> is the strongest tool for the power to say yes or no — like the Tahltan Section 7 model.",ask:"Remember this secures decision-making authority, not benefits. You'll still need a separate company IBA for money, jobs, and operational protections."},
-  unsure:{flag:"watch",crit:"The right instrument",your:"It's not yet clear which instrument(s) are in play.",ask:"Map out which of the three you need — government consent agreement, government revenue agreement (ECDA), and company IBA — before committing to any single document."}
+  iba:{flag:"watch",crit:"The right instrument",your:"A <b>company IBA</b> handles benefits and protections, and is the right tool once there's a <b>defined project</b> heading into review — but it does <b>not</b> give consent or replace government revenue-sharing.",ask:"Make sure you also have (or are pursuing) a government revenue-sharing agreement (ECDA) and a Crown consent/decision-making agreement (the Crown track of this tool). Each does different work — don't let the IBA stand in for either."},
+  "early-agree":{flag:"strong",crit:"The right instrument",your:"An <b>early agreement</b> is the right tool for this stage — its trigger is first contact, and it's a chance to set ground rules cheaply before the proponent sets the pace.",ask:"Initiate it before the proponent acts. Use it to secure capacity funding and put 'negotiating is not consent' and 'without prejudice to our rights' language in writing from the very start, then move to a full IBA once there's a defined project."}
  },
  capacity:{
   yes:{flag:"strong",crit:"Your independent capacity",your:"You have <b>your own independent advisors</b> — the most reliable advantage a Nation can have.",ask:"Keep them independent of the company. Have them produce your own reclamation-cost and project-economics estimates to negotiate against, not just react to the company's numbers."},
@@ -600,8 +900,7 @@ const RULES={
  closure:{
   strong:{flag:"strong",crit:"Closure & end-of-life (PRIORITY)",your:"Closure is <b>covered up front</b> — the strongest position, and rare in practice.",ask:"Verify the Crown holds 100% hard-form security (cash or letter of credit, not in-ground mineral value) for full-life reclamation and water treatment. Confirm with counsel that escrow / successor obligations survive insolvency, and compare the funded amount against your own independent clean-up estimate. Remember Redwater: ranking first means nothing if the estate is empty."},
   some:{flag:"watch",crit:"Closure & end-of-life (PRIORITY)",your:"Closure is <b>mentioned but thin</b> — the most common situation, and a real risk.",ask:"Strengthen it: a dedicated closure chapter, your consent to change the clean-up plan, escrowed long-term monitoring funding, and equipment/infrastructure disposition. Model it on the Opinagow and Argyle examples."},
-  none:{flag:"gap",crit:"Closure & end-of-life (PRIORITY)",your:"Closure is <b>not really addressed</b> — this is the field's single biggest failure, and the most dangerous gap.",ask:"Make closure a first-order negotiating item with its own chapter. Require progressive clean-up during operations, funded post-closure monitoring, and bankruptcy-survival protections — confirmed by qualified counsel."},
-  unknown:{flag:"gap",crit:"Closure & end-of-life (PRIORITY)",your:"You don't yet know what the agreement says about closure — which itself is a red flag for a priority area.",ask:"Get the closure terms reviewed by a lawyer and a technical advisor immediately. Find out what government-held clean-up security exists and whether it matches the real cost."}
+  none:{flag:"gap",crit:"Closure & end-of-life (PRIORITY)",your:"Closure is <b>not really addressed</b> — this is the field's single biggest failure, and the most dangerous gap.",ask:"Make closure a first-order negotiating item with its own chapter. Require progressive clean-up during operations, funded post-closure monitoring, and bankruptcy-survival protections — confirmed by qualified counsel."}
  },
  environment:{
   strong:{flag:"strong",crit:"Environmental monitoring",your:"You have <b>funded Indigenous monitoring with real access</b> — a standout strength.",ask:"Protect the funding over the full life of the project so monitoring doesn't quietly weaken over time. Keep your monitors' authority to require action, not just observe."},
@@ -621,112 +920,694 @@ const RULES={
  confidential:{
   open:{flag:"strong",crit:"Confidentiality & freedom to speak",your:"The deal is <b>mostly open</b>, with only financial figures private — the strongest standard, and rare.",ask:"Keep it this way (the Opinagow standard). Open terms let you benchmark against other Nations' deals and remove the information disadvantage that secrecy creates."},
   standard:{flag:"watch",crit:"Confidentiality & freedom to speak",your:"Confidentiality is <b>standard, but you keep your voice</b> — no gag on opposing the project.",ask:"Carve out the right to share terms with your advisors, coalitions like FNMPC, and (anonymized) for benchmarking. Make sure nothing limits your community's freedom to speak."},
-  gag:{flag:"gap",crit:"Confidentiality & freedom to speak",your:"There's a <b>no-opposition or non-disparagement clause</b> — a serious warning sign that correlates with weak deals.",ask:"Refuse it and escalate to independent counsel — consider walking. In the Pinehouse case this kind of clause was used against the community's own democratic process. Insist members see the full agreement, not a summary, before any vote."},
-  unknown:{flag:"watch",crit:"Confidentiality & freedom to speak",your:"You're <b>not sure</b> what the confidentiality terms are.",ask:"Have the confidentiality and any 'support'/'no-opposition' language reviewed before signing. At minimum, preserve your right to share terms with advisors and to speak freely about the project."}
+  gag:{flag:"gap",crit:"Confidentiality & freedom to speak",your:"There's a <b>no-opposition or non-disparagement clause</b> — a serious warning sign that correlates with weak deals.",ask:"Refuse it and escalate to independent counsel — consider walking. In the Pinehouse case this kind of clause was used against the community's own democratic process. Insist members see the full agreement, not a summary, before any vote."}
  },
  cumulative:{
-  linked:{flag:"strong",crit:"Cumulative effects",your:"You're weighing this against the <b>wider load on your territory</b>, with your own monitoring — the right approach.",ask:"Keep the IBA linked to a regional, Nation-led monitoring and data framework. A single agreement can't capture regional impact, so this connection is what protects against the build-up."},
+  linked:{flag:"strong",crit:"Cumulative effects",your:"The build-up is being weighed where it belongs — a <b>regional, Nation-led cumulative assessment</b> at the Crown/treaty level, with your own data feeding it — the right approach.",ask:"Hold the Crown to it: a standing regional or strategic cumulative-effects assessment, Nation-led and Nation-data-fed, with <b>enforceable disturbance thresholds</b> on your territory (the Yahey pathway — the Blueberry River settlement capped new disturbance at 750 ha/year). This is treaty- and land-management work that sits above any single company deal; keep it there rather than folding it into an IBA, which can't carry it."},
   aware:{flag:"watch",crit:"Cumulative effects",your:"You're <b>aware</b> of the combined pressure but nothing formal captures it.",ask:"Pursue cumulative-effects protection at the regional and treaty level (the Yahey pathway) and through the environmental assessment — not inside this one IBA, which can't do that work."},
   single:{flag:"gap",crit:"Cumulative effects",your:"Only <b>this one project</b> is in view — the combined effect of all development isn't being counted.",ask:"Raise cumulative effects in the government assessment and at the regional/treaty level. Yahey v. BC showed decades of stacked approvals can unjustifiably break Treaty rights — a single IBA cannot capture this."}
+ },
+ federal:{
+  "federal-in":{flag:"strong",crit:"Federal assessment & duty to consult",your:"There are <b>clear federal effects and Canada is assessing</b> — so the federal track genuinely engages and adds a second arena of leverage alongside the provincial one.",ask:"Confirm in writing that Canada is relying on its impact-assessment process to help discharge its own duty to consult, and that the process is adequate — funded participation, a real hearing, and written reasons (the Clyde River standard). Treat the federal assessment as additional to BC's, not a substitute, and keep your rights — not just environmental effects — at its centre."},
+  unclear:{flag:"watch",crit:"Federal assessment & duty to consult",your:"It's <b>unclear whether the federal Act applies</b> — common after the 2023 reference and 2024 amendments narrowed the designated-projects scheme to projects with real federal effects.",ask:"Ask the Impact Assessment Agency for a written determination of whether the project is designated and has non-negligible federal effects (fisheries, migratory birds, federal lands, cross-border impacts, or federal funding/permits). The answer decides whether the federal track engages at all — don't assume it does or doesn't until Canada has ruled."},
+  "province-only":{flag:"watch",crit:"Federal assessment & duty to consult",your:"This looks like a <b>wholly-in-province project</b> with no obvious federal trigger — so there may be <b>no federal assessment</b>, leaving BC's process as the main arena.",ask:"Don't read 'no federal assessment' as 'no federal duty' — the federal duty-to-consult floor still attaches to any federal permit or funding. Put your weight into the provincial track (the Provincial branch of this tool), and ask whether any federal permit is nonetheless required so the federal consult duty isn't quietly skipped."}
+ },
+ unda:{
+  engaged:{flag:"strong",crit:"Federal UNDRIP (UN Declaration Act)",your:"Canada is <b>engaging you consistent with UNDRIP</b> — consulting and cooperating in the spirit of the UN Declaration Act and its action plan, not just the bare legal minimum.",ask:"Hold Canada to that standard in writing and tie it to the action-plan measures. The Act's 'consult and cooperate' duty isn't yet settled by the courts, so document the cooperative, consent-seeking engagement now while the practice is favourable, and link it to any federal assessment or permit decision."},
+  minimal:{flag:"watch",crit:"Federal UNDRIP (UN Declaration Act)",your:"Canada is offering <b>only the bare legal minimum</b> — some federal contact, but not the cooperative, consent-seeking standard the UN Declaration Act points to.",ask:"Invoke the UN Declaration Act and its action plan explicitly, and press federal decision-makers to consult and cooperate, not just tick a box. Keep a record: the Act's standard is a lever even though its precise legal meaning is still being worked out by the courts."},
+  "none-fed":{flag:"gap",crit:"Federal UNDRIP (UN Declaration Act)",your:"There's <b>no federal UNDRIP engagement</b> — either Canada isn't engaging you on these grounds, or no federal decision is in play to trigger it.",ask:"First confirm whether any federal decision, permit, or funding actually engages Canada here (see the federal-applicability question). If it does, put Canada on notice of the UN Declaration Act and demand consult-and-cooperate engagement. If no federal decision is in play, this lever simply doesn't apply — focus on the provincial track."}
  },
  equity:{
   "yes-protected":{flag:"strong",crit:"Equity / ownership",your:"You're considering <b>ownership while keeping independent protections</b> — the right way to approach equity.",ask:"Hold the line: don't trade away monitoring, closure, or consent rights to become an owner. Model the decade-plus wait before equity revenue flows, and the downside risk."},
   "yes-only":{flag:"watch",crit:"Equity / ownership",your:"Equity is being framed as <b>the</b> benefit — but ownership alone doesn't protect your territory.",ask:"Layer equity on top of strong environmental, closure, and consent clauses — never instead of them. Watch the conflict between owning the project and policing it."},
   no:{flag:"watch",crit:"Equity / ownership",your:"This is a <b>benefits-only</b> deal, no ownership.",ask:"That's a valid choice. If equity ever comes up later, treat it as a separate decision and keep your protection clauses independent of it."},
   considering:{flag:"watch",crit:"Equity / ownership",your:"You're <b>weighing</b> whether to pursue ownership.",ask:"Model the risks honestly — the decade-long wait for revenue and the liability exposure — and use the federal Indigenous Loan Guarantee Program and FNFA to lower cost if you proceed. Keep protections separate."}
+ },
+ mouTrigger:{
+  have:{flag:"strong",crit:"Early-agreement timing",your:"You <b>already have an MOU or early agreement</b> in place before any full IBA — the right sequence, with the ground rules set on your terms.",ask:"Make sure it carries 'without prejudice to our rights and consent' and capacity-funding terms, and that it's clearly a place-setter, not a substitute for the IBA, consent, or revenue tracks. Revisit it before substantive IBA talks begin."},
+  "early-now":{flag:"strong",crit:"Early-agreement timing",your:"You're <b>early and moving to set the terms first</b> — exactly the moment to initiate an MOU before the proponent sets the pace.",ask:"Initiate the early agreement now, before substantive talks: fix communication ground rules, secure capacity funding, and put non-waiver / 'without prejudice' language in writing from the very start. Don't wait for the company to propose the terms."},
+  "proponent-led":{flag:"gap",crit:"Early-agreement timing",your:"The <b>company is driving the process and you're reacting</b> — the terms of engagement are being set by the proponent, not by you.",ask:"Take back the initiative: propose an MOU that fixes a single point of contact, information-sharing, capacity funding, and 'without prejudice' language. Setting the ground rules early is the cheapest leverage you have, and it stops divide-and-conquer dynamics."},
+  "skip-to-iba":{flag:"watch",crit:"Early-agreement timing",your:"You're <b>going straight to IBA talks with no early agreement</b> — skipping the cheapest chance to lock in protective language and funding.",ask:"Even now, put an MOU or 'without prejudice' protocol in place alongside the IBA talks: secure capacity funding and record that negotiation is not consent before terms harden. Going straight to the IBA forfeits the early framing that protects your position."}
+ },
+ mouInstrument:{
+  "mou-engage":{flag:"strong",crit:"The early instrument",your:"An <b>MOU or communication / engagement agreement</b> is the right early tool — it sets ground rules cheaply before any full IBA.",ask:"Use it to fix a single point of contact, meeting cadence, and information-sharing (heading off divide-and-conquer), and put 'without prejudice to our rights and consent' at the front. Keep it clearly a place-setter, not the main deal."},
+  exploration:{flag:"watch",crit:"The early instrument",your:"An <b>exploration agreement</b> covers the company's pre-project work — useful, but it's about drilling and sampling, not the project itself.",ask:"Put conditions, payments, and protections on the exploration phase, and use it as the natural place to add 'without prejudice' language and capacity funding. Don't let agreeing to exploration be read as agreeing to a future mine."},
+  "capacity-fund":{flag:"strong",crit:"The early instrument",your:"A <b>capacity-funding agreement</b> resources your own independent review — the most reliable lever you control.",ask:"Make sure the funds flow to your Nation, that you choose and instruct your own advisors, and that the money ideally comes from the Crown. Be wary of company-provided 'shared' experts — see the capacity question in this track."}
+ },
+ mouCapacity:{
+  "crown-own":{flag:"strong",crit:"Early capacity funding",your:"You have <b>Crown-sourced funding and choose your own advisors</b> — the gold standard for independent early review.",ask:"Keep the advisors fully independent of the company, and have them produce your own reclamation-cost and project-economics estimates so you negotiate against the company's numbers rather than reacting to them."},
+  "company-own":{flag:"watch",crit:"Early capacity funding",your:"The <b>company funds it, but you still choose your own advisors</b> — workable, as long as the advice stays genuinely independent.",ask:"Keep the funding at arm's length: the money should come to you, your advisors should answer only to you, and ideally seek Crown participant funding too so you're not solely on the proponent's dime. Watch for any strings on who you can hire."},
+  "company-shared":{flag:"gap",crit:"Early capacity funding",your:"The company is offering its <b>own or 'shared' experts</b>, or to pick yours — a serious red flag; advice the proponent controls is not independent.",ask:"Refuse shared or company-chosen experts. Insist that capacity funding flow to your Nation and that you retain your own legal, financial, and technical advisors — ideally with Crown funding. This is the most common way Nations end up negotiating from weakness."},
+  none:{flag:"gap",crit:"Early capacity funding",your:"There's <b>no capacity funding</b> — you'd be reviewing the project on the company's information alone.",ask:"Before going further, secure capacity funding through the early agreement or the assessment's participant-funding mechanism, ideally from the Crown. In one survey 71% of Nations couldn't afford the experts they needed — don't enter substantive talks without your own."}
+ },
+ mouCautions:{
+  protected:{flag:"strong",crit:"Non-waiver & substitution",your:"The agreement says plainly that <b>negotiation is not consent and waives nothing</b>, and it doesn't displace the IBA, consent, or revenue tracks — the right standard.",ask:"Keep the 'without prejudice to our rights and consent' language at the front and explicit. Escalate immediately if a proponent or regulator ever cites your engagement or the MOU as evidence of consent or completed consultation."},
+  partial:{flag:"watch",crit:"Non-waiver & substitution",your:"There's <b>some protective language, but it's thin or unclear</b> — non-waiver is gestured at, or the agreement is silent on keeping the consent and revenue tracks separate.",ask:"Tighten it: put airtight 'without prejudice' and 'negotiation is not consent' language in writing, and state that the early agreement does not substitute for the company IBA, the Crown consent agreement, or revenue sharing. Have counsel review the wording."},
+  substituting:{flag:"gap",crit:"Non-waiver & substitution",your:"The early agreement is being <b>treated as the deal — or as your consent</b> — collapsing the line between talking and agreeing.",ask:"Stop and reset with counsel. Insist in writing that the MOU is not consent and not a substitute for the IBA, the consent track, or revenue sharing. This is the field's most serious risk — a signed early agreement read as consent or completed consultation."}
  }
 };
 
-/* ---------- ENGINE ---------- */
-let cur=0; const answers={}; let showingDivider=false;
+/* ---------- SHARED STATUS OPTIONS + na FLAG (D3 / D9; A5 / DL-0023) ----------
+   A uniform "non-answer" status group appended BENEATH the substantive options on
+   EVERY question, plus an N/A member only where a criterion can genuinely not
+   apply (the question carries `naEligible:true`). They are REGULAR opts entries
+   (A5/D9) — flowing through the same pick→RULES→flag machinery — but defined once
+   here and injected at load time (injectStatusOptions, below) rather than
+   hand-duplicated onto all twenty questions; the per-question RULES rows are the
+   shared STATUS_RULES, also injected. The folded `unsure`/`unknown` options that
+   used to live on rights/consent/revenue/instrument/closure/confidential (and the
+   two MOU `unsure` options) are now this group's `notSure` member (D3: "those
+   become the 'Not sure' member of the group").
+
+   Flag mapping (D3, confirmed): noOffer→gap, notDiscussed→watch, notSure→watch,
+   na→na (the new flag, EXCLUDED from scoring — greyed and uncounted in the
+   summary, never inflating or deflating the headline). */
+const STATUS_OPTS=[
+ {k:"noOffer",   status:true, label:"No offer made yet",      desc:"No offer or position on this has been put forward yet — there's nothing concrete to weigh.", flag:"gap"},
+ {k:"notDiscussed",status:true, label:"Not discussed yet",    desc:"This hasn't come up in the conversation so far — it still needs to be put on the agenda.", flag:"watch"},
+ {k:"notSure",   status:true, label:"Not sure / don't know",  desc:"We're not certain where this stands and would need to find out before relying on it.", flag:"watch"},
+ {k:"na",        status:true, naOnly:true, label:"Not applicable to this proposal", desc:"This criterion genuinely doesn't apply to this proposal — set it aside; it isn't scored.", flag:"na"}
+];
+/* The shared RULES rows for the status options. `crit` is supplied per question
+   at injection time (it mirrors the question's own criterion label so the summary
+   row reads naturally); the flag + your/ask text are uniform. */
+const STATUS_RULES={
+ noOffer:{flag:"gap",  your:"<b>No offer or position</b> has been put forward on this yet — there's nothing concrete to weigh.",ask:"Put this on the table: ask whoever it falls to (the company, the Crown, or both) for a concrete position here, so it can be assessed rather than left blank."},
+ notDiscussed:{flag:"watch",your:"This <b>hasn't been discussed yet</b> — it isn't a gap so much as an open item.",ask:"Add this to the agenda for the next conversation so it doesn't get missed. Knowing where it stands is the first step to negotiating it."},
+ notSure:{flag:"watch",your:"You're <b>not sure</b> where this stands.",ask:"Find out: have your own advisors check the current position before you rely on it. An unknown here is a question to resolve, not a settled gap."},
+ na:{flag:"na",your:"You've marked this <b>not applicable</b> to this proposal — it's set aside and not scored.",ask:""}
+};
+/* Append the status group to every question's opts (and its RULES rows), once, at
+   load time. `na` is added ONLY to naEligible questions. Idempotent-safe: only
+   keys not already present are added, so a question can't get a doubled status
+   option. The injected RULES rows borrow the question's own `crit` label. */
+function injectStatusOptions(){
+ Q.forEach(q=>{
+  q.opts=q.opts||[];
+  const have=new Set(q.opts.map(o=>o.k));
+  STATUS_OPTS.forEach(s=>{
+   if(s.naOnly&&!q.naEligible)return;     // na only where the criterion can not apply
+   if(have.has(s.k))return;               // never double up
+   q.opts.push({k:s.k,status:true,label:s.label,desc:s.desc});
+  });
+  // Matching RULES rows, keyed by question id. Reuse a substantive row's crit so
+  // the status row reads under the same criterion heading in the summary.
+  const sample=RULES[q.id]?Object.values(RULES[q.id])[0]:null;
+  const crit=sample?sample.crit:(q.tag||q.title);
+  RULES[q.id]=RULES[q.id]||{};
+  STATUS_OPTS.forEach(s=>{
+   if(s.naOnly&&!q.naEligible)return;
+   if(RULES[q.id][s.k])return;
+   const r=STATUS_RULES[s.k];
+   RULES[q.id][s.k]={flag:r.flag,crit:crit,your:r.your,ask:r.ask};
+  });
+ });
+}
+
+/* ---------- GOALS (Step 0; A3 / DL-0024) ----------
+   The Goals module the user works through after Begin and before the hub. Three
+   kinds of item, all persisted into the `goals` store (parallel to `answers`):
+
+     1. principles — the 8 generalized principles from research/decision_scorecard.md.
+        For each, the Nation picks an ASPIRATION band and a MINIMUM-acceptable band
+        from that principle's own Green/Amber/Red descriptions. Band text is the
+        scorecard's verbatim (generalized to "the Nation" at the research boundary,
+        DL-0019). Goal *scoring* (proposal band vs aspiration/minimum) is Phase 7 —
+        Phase 2 only captures the bands.
+     2. cumulative — a dedicated cumulative-impact goal (NOT one of the 8, NOT a
+        custom goal). The Nation sets a cumulative-impact limit, then a `reveals`
+        follow-up ("exceed it for an extraordinary opportunity?": yes/no/depends)
+        is injected. This is the first and only branch instance in Phase 2 (D2/D4).
+     3. custom — a free-text "add your own goal" slot; captured, not scored (D10).
+
+   `goals` keys:
+     goals.principles[<pid>] = {aspiration:<band>, minimum:<band>}
+     goals.cumulative.limit  = <option key>     (one of GOALS.cumulative.opts)
+     goals.cumulative.exceed = <option key>     (the revealed follow-up answer)
+     goals.custom            = <free text>      (may be empty)                    */
+const GOALS={
+ /* band order green > amber > red, strongest first — drives band-select UI and
+    (Phase 7) the aspiration >= minimum comparison. */
+ bandOrder:["green","amber","red"],
+ bandLabel:{green:"Green — strong fit",amber:"Amber — mixed / conditional",red:"Red — poor fit"},
+ principles:[
+  {id:"steward", n:1, title:"The Nation as (co-)steward of the land",
+   bands:{
+    green:"The Nation has a clear, ongoing role shaping how the land is used and cared for.",
+    amber:"The Nation has some influence, but others still drive most day-to-day stewardship decisions.",
+    red:"Land-use and stewardship decisions are made almost entirely by others."}},
+  {id:"ownsource", n:2, title:"Own-source revenue",
+   bands:{
+    green:"Creates meaningful, recurring own-source revenue with a clear line of sight to cash flow.",
+    amber:"Offers some revenue or sharing, but it is modest, uncertain, or dependent on others.",
+    red:"Little or no own-source revenue, or only one-time and minor benefit."}},
+  {id:"sustainability", n:3, title:"Sustainability and good stewardship",
+   bands:{
+    green:"Improves or maintains long-term ecosystem health and aligns with stewardship commitments.",
+    amber:"Has mixed impacts with trade-offs that require conditions or monitoring.",
+    red:"Undermines long-term stewardship goals or conflicts with core land, water, or wildlife values."}},
+  {id:"investment", n:4, title:"Investment by the Nation",
+   bands:{
+    green:"Investment is well matched to capacity and risk, with protections and a realistic plan.",
+    amber:"Requires moderate capital or guarantees that may work with staging or strong partners.",
+    red:"Demands large, risky, or open-ended investment not matched by control, revenue, or protections."}},
+  {id:"jobs", n:5, title:"Member jobs and capacity",
+   bands:{
+    green:"Creates meaningful, sustained jobs, contracts, training, or ownership pathways for members.",
+    amber:"Provides limited, short-term, or mostly indirect jobs and some training opportunities.",
+    red:"Creates almost no member jobs or capacity-building."}},
+  {id:"community", n:6, title:"Support for partners, neighbours, and broader community",
+   bands:{
+    green:"Strengthens relationships and delivers visible benefits beyond the Nation.",
+    amber:"Has mixed effects or narrow benefits that need careful communication and conditions.",
+    red:"Damages relationships or creates significant external negative impacts."}},
+  {id:"riskreward", n:7, title:"Risk, reward, and work/time commitment for the Nation",
+   bands:{
+    green:"Risk is understood and manageable, upside is clear, and the time commitment is reasonable.",
+    amber:"Risks or work demands are moderate or uncertain, but manageable with conditions or staging.",
+    red:"High or poorly understood risk, heavy time demands, or limited reward relative to effort."}},
+  {id:"authority", n:8, title:"The Nation's decision authority / control over the path to yes",
+   bands:{
+    green:"The Nation holds strong decision authority over key steps, conditions, timing, or critical infrastructure/data.",
+    amber:"The Nation has shared influence at decision tables, but others still hold some decisive levers.",
+    red:"The Nation is mainly consulted; most of the power to get to yes sits with government, regulators, or companies."}}
+ ],
+ /* The dedicated cumulative-impact goal (D2/D4). Not one of the 8 principles and
+    not a custom goal. Setting a limit reveals the "exceed it?" follow-up via the
+    general `reveals` mechanism — the first and only branch in Phase 2. */
+ cumulative:{
+  id:"cumLimit",
+  title:"Your limit on cumulative impact",
+  why:"Beyond any single project, harm to a territory builds up across <em>all</em> the development on it. Set the limit you want to hold the line at — the threshold of total disturbance, change, or loss your Nation is not willing to cross — so a proposal can be weighed against it, not just on its own.",
+  opts:[
+   {k:"firm",label:"A firm, defined limit we won't cross",desc:"A clear threshold (e.g. a disturbance cap, a no-go area, a protected value) that a proposal must stay within — like the 750 ha/year cap in the Blueberry River settlement.",reveals:["cumExceed"]},
+   {k:"directional",label:"A direction of travel, not a hard line yet",desc:"We know the territory is under pressure and want cumulative load reduced over time, but we haven't fixed a specific number or boundary.",reveals:["cumExceed"]},
+   {k:"none",label:"No cumulative limit set yet",desc:"We haven't decided where our limit on the total build-up of development is. (Setting one is itself worth doing — see the Crown track on cumulative effects.)"}
+  ]
+ },
+ /* The branch child revealed by a firm/directional cumulative limit (D2/D4).
+    Carries `parent` (resolves to cumLimit) — checker-validated like a track
+    branch child, but lives in the Goals module rather than a track. */
+ cumExceed:{
+  id:"cumExceed",
+  parent:"cumLimit",
+  title:"Would you exceed that limit for an extraordinary opportunity?",
+  why:"A limit is only real once you've decided how firm it is. If a once-in-a-generation opportunity came along, would your Nation hold the line, or could the limit move?",
+  opts:[
+   {k:"no",label:"No — the limit holds, whatever the offer",desc:"The threshold is a true walk-away; no benefit on offer would justify crossing it."},
+   {k:"yes",label:"Yes — an extraordinary opportunity could justify it",desc:"The limit is a strong default, but a truly exceptional benefit could move it — with eyes open."},
+   {k:"depends",label:"It depends — we'd weigh it case by case",desc:"No blanket answer; we'd decide against our goals and the specifics of the opportunity at the time."}
+  ]
+ },
+ custom:{
+  id:"custom",
+  title:"Add your own goals",
+  why:"The eight principles above are a starting frame, not the whole picture. Add any goals that matter to your Nation in your own words — they'll be captured on your summary as a reminder, even though the tool can't score them automatically."
+ }
+};
+/* All goal-item ids that carry a band/option answer, for the checker + progress.
+   The 8 principles each capture two bands (aspiration + minimum); the cumulative
+   goal captures a limit and (when revealed) the exceed follow-up. */
+const GOAL_PRINCIPLE_IDS=GOALS.principles.map(p=>p.id);
+
+/* ---------- PRINCIPLE → QUESTIONS MAPPING (A8 / Assumption 2; D8/D10) ----------
+   The Goals scorecard (Phase 7) scores each of the 8 principles by aggregating the
+   answers of the tool questions that genuinely evaluate that principle, then
+   comparing the resulting band against the Nation's aspiration + minimum bands.
+
+   HONESTY RULE (the core constraint, per the plan): the 8 scorecard principles do
+   NOT all map onto the 20 questions. Three principles are NOT covered by anything
+   the tool asks — so the tool must NOT fabricate a proposal band for them. It shows
+   the Nation's stated goal and marks the proposal side "not assessed by this tool —
+   evaluate separately." The not-assessed set, with WHY each is uncovered:
+     • jobs       — member jobs / employment / contracting / training: the tool asks
+                    nothing about the labour, procurement, or training terms of a deal.
+     • community  — benefits to partners, neighbours, and the broader (non-member)
+                    community: the tool is scoped to the Nation's own position, not
+                    spillover relationships.
+     • riskreward — the work/time-commitment and net-effort side of risk-reward: the
+                    tool surfaces individual risks (closure, insolvency, equity) but
+                    never weighs the Nation's overall work/time burden vs. reward.
+
+   For the five COVERED principles, `questions` lists the question ids whose answers
+   feed the principle. The plan fixes four of these (own-source revenue←revenue;
+   sustainability←environment/closure/cumulative; investment←equity/capacity;
+   decision authority←consent/consult/rights); `steward` (the Nation's ongoing,
+   on-the-ground stewardship role) is mapped to the land-stewardship questions
+   (cumulative, environment, culture) on the same grounding.
+
+   AGGREGATION RULE: worst-of. Each mapped question's flag maps strong→green,
+   watch→amber, gap→red. The principle's proposal band is the WORST (lowest) band
+   among its mapped questions that were actually answered, EXCLUDING `na` rows
+   (which are set aside, never scored — consistent with the per-question summary).
+   Worst-of is deliberate: a single serious gap on a stewardship/authority/closure
+   dimension pulls the whole principle down — a Nation weighing a deal needs the
+   weakest link, not an average that hides it. If NONE of a principle's mapped
+   questions were answered, the proposal band is null ("not yet answered") and the
+   principle is shown but not band-scored. */
+const PRINCIPLE_MAP={
+ steward:        {questions:["cumulative","environment","culture"]},
+ ownsource:      {questions:["revenue","equity"]},
+ sustainability: {questions:["environment","closure","cumulative"]},
+ investment:     {questions:["equity","capacity"]},
+ jobs:           {notAssessed:"Member jobs, contracting, and training aren't covered by any question this tool asks — assess the deal's employment and procurement terms separately."},
+ community:      {notAssessed:"Benefits to partners, neighbours, and the broader community fall outside this tool's scope (it weighs the Nation's own position) — assess these relationships separately."},
+ riskreward:     {notAssessed:"The overall work/time commitment vs. reward isn't something this tool weighs (it surfaces individual risks, not the net effort) — assess the Nation's total burden and upside separately."},
+ authority:      {questions:["consent","consult","rights"]}
+};
+/* flag -> scorecard band, and a band-ordinal for worst-of / aspiration comparisons
+   (lower index = stronger; mirrors GOALS.bandOrder green>amber>red). */
+const FLAG_TO_BAND={strong:"green",watch:"amber",gap:"red"};
+const BAND_RANK={green:0,amber:1,red:2};
+
+/* ---------- RE-SURVEY MILESTONES (D5) ----------
+   "When to revisit this." Lifecycle milestones, ordered, each tied to the stage(s)
+   it follows. `after` lists the `stage` answer keys (Q5/iba `stage`) the milestone
+   comes AFTER — used to surface the NEXT relevant milestone(s) for where the Nation
+   currently is. The periodic operations check repeats and so has no single "after".
+   Stage order (Q5): early → govreview → ea → negotiating → operating. */
+const MILESTONES=[
+ {id:"ea-decision", after:["early","govreview","ea"],
+  title:"After the assessment / approval decision",
+  body:"Once the environmental assessment or a key Crown approval is decided, re-run this: the decision changes your leverage, what's still open to negotiate, and whether the Crown met its duty to consult. A documented lack of consent at this point preserves your judicial-review options."},
+ {id:"pre-construction", after:["early","govreview","ea","negotiating"],
+  title:"Before construction starts",
+  body:"Before ground is broken, confirm the hard protections are actually locked in — closure funding, bankruptcy survival, consent over future changes, capacity funding. These are almost impossible to add once the project is built."},
+ {id:"start-operations", after:["early","govreview","ea","negotiating"],
+  title:"At the start of operations",
+  body:"When the project begins operating, check that monitoring, enforcement teeth, and revenue/equity flows are working as written — not just promised. This is when paper commitments meet practice."},
+ {id:"periodic", after:["operating"], periodic:true,
+  title:"Periodically while operating (yearly is a good cadence)",
+  body:"While the project runs, revisit on a regular cadence: watch for expansions or changes slipping through on old approvals (treat each as a fresh decision), confirm reclamation security still matches the real clean-up cost, and check the cumulative load on your territory against the limit you set."},
+ {id:"pre-closure", after:["operating"],
+  title:"Before closure / end of life",
+  body:"As the project nears its end, re-run this with closure front and centre: is the clean-up plan funded and current, does your consent govern changes to it, and are bankruptcy protections still standing if the company is weakening?"}
+];
+
+/* ---------- ENGINE ----------
+   Nav/state model (A1): a route + per-track-position machine, replacing the old
+   single linear `cur` index. State drives which screen renders; the hub is the
+   return point after each track, and the summary is reached from the hub.
+     route : 'intro' | 'goals' | 'hub' | 'track' | 'summary'
+     track : the active track id when route==='track' (else null)
+     pos   : index into the active track's RESOLVED question list
+   `answers` is keyed by question id (shared across tracks). `goals` is a parallel
+   store for the Phase-2 Goals module (declared now; populated in Phase 2). */
+/* Inject the shared status-option group (+ its RULES rows) onto every question
+   BEFORE any index is built off Q, so the resolver, renderQ, and the summary all
+   see the augmented opts (D3/D9 / DL-0023). */
+injectStatusOptions();
+const QBYID={}; Q.forEach(q=>{QBYID[q.id]=q;});
+/* Goal branch children (e.g. cumExceed) are reveal targets too — register them by
+   id so the shared reveals machinery (appendWithReveals / pruneReveals) can find
+   them, even though they live in GOALS rather than the track Q array. */
+QBYID[GOALS.cumExceed.id]=GOALS.cumExceed;
+const state={route:'intro', track:null, pos:0, showingDivider:false, cameFromHub:false};
+const answers={};
+const goals={};
 const elQ=document.getElementById('screen-q');
+const elGoals=document.getElementById('screen-goals');
+const elHub=document.getElementById('screen-hub');
 const elSum=document.getElementById('screen-summary');
 const elIntro=document.getElementById('screen-intro');
 const prog=document.getElementById('progress');
 const pfill=document.getElementById('pfill');
 const pcount=document.getElementById('pcount');
 
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});}
+/* Honour prefers-reduced-motion for the screen-swap scroll: smooth by default,
+   but instant when the user (or an automation harness) asks for reduced motion —
+   which also keeps the scroll from leaving elements perpetually "in motion". */
+const REDUCE_MOTION=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo({top:0,behavior:REDUCE_MOTION?'auto':'smooth'});}
 
-function start(){cur=0;prog.style.display='block';goto(0,true);}
+/* Resolver (A1/A4 / DL-0022): return a track's ordered list of question objects.
+   Base list = TRACKS[track].questionIds, resolved by id. Branch children revealed
+   by answers are injected here: if answers[id] selected an option carrying
+   `reveals:[childIds]`, the named child question objects are spliced in
+   immediately after their parent, recursively (a child may itself reveal). This
+   keeps the engine general (any option can reveal) while it's used sparingly. */
+function resolveTrack(track){
+ const t=TRACKS[track];
+ if(!t)return [];
+ const list=[];
+ t.questionIds.forEach(id=>{appendWithReveals(id,list);});
+ return list;
+}
+/* Append question `id`, then any branch children its current answer reveals,
+   recursively, immediately after it (depth-first, preserving declared order). */
+function appendWithReveals(id,list){
+ const q=QBYID[id];
+ if(!q)return;
+ list.push(q);
+ const a=answers[id];
+ if(!a)return;
+ const opt=(q.opts||[]).find(o=>o.k===a);
+ if(opt&&opt.reveals)opt.reveals.forEach(childId=>appendWithReveals(childId,list));
+}
+/* Return the child ids an option (q.opts[k]) reveals, or []. Used by pick() to
+   clear stale branch answers when a revealing option is deselected. */
+function revealsOf(q,k){
+ const opt=(q&&q.opts||[]).find(o=>o.k===k);
+ return (opt&&opt.reveals)||[];
+}
+/* Clear the answers of branch children that are no longer reachable after the
+   parent's answer changed from `prevK` to (current answers[qid]). Recurses so a
+   revealed child's own revealed grandchildren are cleared too (deselect cleanup).
+   Returns true if any answer was removed (so callers can recompute progress). */
+function pruneReveals(q,prevK){
+ const nowK=answers[q.id];
+ if(prevK===nowK)return false;
+ let changed=false;
+ revealsOf(q,prevK).forEach(childId=>{
+  // Only prune children the NEW answer doesn't also reveal.
+  if(revealsOf(q,nowK).includes(childId))return;
+  const child=QBYID[childId];
+  if(child&&answers[childId]!==undefined){
+   const grandPrev=answers[childId];
+   delete answers[childId];
+   changed=true;
+   // Recurse: clear grandchildren the (now removed) child had revealed.
+   if(child.opts)pruneReveals(child,grandPrev);
+  }
+ });
+ return changed;
+}
 
-function setProg(){const total=Q.length;pfill.style.width=((cur)/(total+1)*100)+'%';pcount.textContent='Step '+(cur+1)+' of '+total;}
+/* A track's completion state, used by the hub cards and the summary. */
+function trackState(track){
+ const ids=TRACKS[track].questionIds;
+ if(ids.length===0)return 'soon';          // empty track (e.g. MOU in Phase 1)
+ const answered=ids.filter(id=>answers[id]).length;
+ if(answered===0)return 'notstarted';
+ if(answered<ids.length)return 'inprogress';
+ return 'done';
+}
 
-/* show a section divider before the first question of a section */
-function goto(idx,checkDivider){
- cur=idx;
- if(checkDivider && (idx===0 || Q[idx].section!==Q[idx-1].section)){
-  renderDivider(Q[idx].section);
- } else {
-  renderQ();
+/* ---- entry + progress ---- */
+/* Begin enters the Goals step (Step 0); the hub is reached from Goals. */
+function start(){prog.style.display='block';goToGoals();}
+
+/* ---------- GOALS (Step 0) ---------- */
+function goToGoals(){
+ state.route='goals';state.track=null;state.showingDivider=false;
+ renderGoals();
+}
+/* renderGoals: the 8 principles (each with aspiration + minimum band-select), the
+   dedicated cumulative-impact goal (with its revealed exceed follow-up), and the
+   custom free-text slot. Reachable again from the hub ("Your goals") without
+   losing other state — selections live in `goals` and persist across renders. */
+function renderGoals(){
+ if(state.route==='goals'){pcount.textContent='Step 0 · Your goals';pfill.style.width='6%';}
+ const G=goals;
+ G.principles=G.principles||{};
+ let html=`<div class="mast" style="padding-top:30px"><div class="kicker">Proposal Evaluation · Step 0</div><h1 style="font-size:clamp(28px,5vw,42px)">Set your Nation's goals first</h1><div class="sub" style="font-style:normal">Before weighing any single piece of a proposal, decide what a good outcome looks like to you. For each principle, choose the band you're <strong>aspiring</strong> to and the band you're <strong>willing to settle for</strong>. Your summary scores a proposal against this range.</div><div class="rule2"></div></div>`;
+ html+=`<p class="goals-intro">These eight principles are a shared starting frame. Set as many as are useful — you can come back and change them any time from the hub.</p>`;
+
+ // --- the 8 principles: aspiration + minimum band-select ---
+ GOALS.principles.forEach(p=>{
+  const sel=G.principles[p.id]||{};
+  html+=`<div class="goal-card"><div class="goal-head"><span class="goal-num">${p.n}</span><span class="goal-title">${p.title}</span></div>`;
+  html+=bandGroup(p,'aspiration','Aspiring to',sel.aspiration);
+  html+=bandGroup(p,'minimum','Willing to settle for',sel.minimum);
+  html+=`</div>`;
+ });
+
+ // --- the dedicated cumulative-impact goal + its revealed follow-up (branch) ---
+ const C=GOALS.cumulative;
+ G.cumulative=G.cumulative||{};
+ html+=`<div class="goal-card cumulative"><div class="goal-head"><span class="goal-num">∑</span><span class="goal-title">${C.title}</span></div>`;
+ html+=`<p class="goal-why">${C.why}</p>`;
+ html+=`<div class="bands">`;
+ C.opts.forEach(o=>{
+  const s=G.cumulative.limit===o.k?'sel':'';
+  html+=`<div class="band ${s}" onclick="pickCumLimit('${o.k}')"><div class="bdot"></div><div class="btext"><div class="band-name">${o.label}</div><div class="band-desc">${o.desc}</div></div></div>`;
+ });
+ html+=`</div>`;
+ // The exceed follow-up is REVEALED only when the limit option carries `reveals`.
+ if(cumExceedRevealed()){
+  const E=GOALS.cumExceed;
+  html+=`<div class="cum-followup"><div class="band-group-label">${E.title}</div><p class="goal-why">${E.why}</p><div class="bands">`;
+  E.opts.forEach(o=>{
+   const s=G.cumulative.exceed===o.k?'sel':'';
+   html+=`<div class="band ${s}" onclick="pickCumExceed('${o.k}')"><div class="bdot"></div><div class="btext"><div class="band-name">${o.label}</div><div class="band-desc">${o.desc}</div></div></div>`;
+  });
+  html+=`</div></div>`;
+ }
+ html+=`</div>`;
+
+ // --- custom free-text goals (captured, not scored) ---
+ html+=`<div class="goal-card custom"><div class="goal-head"><span class="goal-num">+</span><span class="goal-title">${GOALS.custom.title}</span></div>`;
+ html+=`<p class="goal-why">${GOALS.custom.why}</p>`;
+ html+=`<textarea class="goal-custom-input" id="goalCustom" placeholder="e.g. Protect the salmon run on the main river · Keep a youth training stream · A seat on the project's oversight board…" oninput="goals.custom=this.value">${escAttr(G.custom||"")}</textarea>`;
+ html+=`</div>`;
+
+ const fromHub=Object.keys(answers).length>0||state.cameFromHub;
+ html+=`<div class="btn-row"><button class="btn btn-ghost" onclick="${fromHub?'goToHub()':'toIntro()'}">←&nbsp; ${fromHub?'Back to hub':'Back to start'}</button><button class="btn btn-primary" onclick="goalsDone()">${fromHub?'Save goals &amp; return to hub':'Continue to the tracks'} &nbsp;→</button></div>`;
+ html+=`<p class="meta-line">You can leave any goal blank and revisit it later — nothing here is required to move on.</p>`;
+ elGoals.innerHTML=html;
+ // Only swap to the screen (with its scroll-to-top + rise animation) when
+ // arriving on the Goals step. Band/limit picks re-render in place and must NOT
+ // re-trigger show() — that would re-scroll and re-run the entry animation on
+ // every selection. show()/bindGloss()/openDetail() are themselves untouched.
+ if(!elGoals.classList.contains('on'))show('screen-goals');
+}
+/* one band-select group (aspiration or minimum) for a principle. */
+function bandGroup(p,kind,label,chosen){
+ let h=`<div class="band-group ${kind}"><span class="band-group-label">${label}</span><div class="bands">`;
+ GOALS.bandOrder.forEach(b=>{
+  const s=chosen===b?'sel':'';
+  h+=`<div class="band ${b} ${s}" onclick="pickBand('${p.id}','${kind}','${b}')"><div class="bdot"></div><div class="btext"><div class="band-name">${GOALS.bandLabel[b]}</div><div class="band-desc">${p.bands[b]}</div></div></div>`;
+ });
+ h+=`</div></div>`;
+ return h;
+}
+/* Is the cumulative exceed follow-up currently revealed? (the chosen limit option
+   carries `reveals` containing cumExceed). Mirrors the track reveals logic. */
+function cumExceedRevealed(){
+ const k=goals.cumulative&&goals.cumulative.limit;
+ if(!k)return false;
+ const opt=GOALS.cumulative.opts.find(o=>o.k===k);
+ return !!(opt&&opt.reveals&&opt.reveals.includes('cumExceed'));
+}
+function pickBand(pid,kind,band){
+ goals.principles=goals.principles||{};
+ goals.principles[pid]=goals.principles[pid]||{};
+ goals.principles[pid][kind]=band;
+ renderGoals();
+}
+/* Cumulative limit pick — the goal-module branch (D2/D4). Picking a limit option
+   that carries `reveals` injects the exceed follow-up; switching to "none"
+   (no reveals) clears any stale exceed answer (deselect cleanup), mirroring the
+   track-side pruneReveals. */
+function pickCumLimit(k){
+ goals.cumulative=goals.cumulative||{};
+ const prev=goals.cumulative.limit;
+ goals.cumulative.limit=k;
+ if(prev!==k){
+  const prevOpt=GOALS.cumulative.opts.find(o=>o.k===prev);
+  const stillRevealed=cumExceedRevealed();
+  if(prevOpt&&prevOpt.reveals&&!stillRevealed)delete goals.cumulative.exceed;
+ }
+ renderGoals();
+}
+function pickCumExceed(k){
+ goals.cumulative=goals.cumulative||{};
+ goals.cumulative.exceed=k;
+ renderGoals();
+}
+function goalsDone(){state.cameFromHub=false;goToHub();}
+/* escape a value for safe placement inside a textarea / attribute. */
+function escAttr(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* Per-track progress: position within the active track's resolved list. */
+function setProg(){
+ if(state.route==='track'){
+  const list=resolveTrack(state.track);
+  const total=list.length||1;
+  const step=state.showingDivider?0:state.pos+1;
+  pfill.style.width=(step/(total+1)*100)+'%';
+  pcount.textContent=TRACKS[state.track].label+' · '+(state.showingDivider?'Start':'Step '+(state.pos+1)+' of '+total);
+ }else if(state.route==='hub'){
+  pcount.textContent='Choose a track';
  }
 }
 
-function renderDivider(secKey){
- const s=SECTIONS[secKey];
- showingDivider=true;
+/* ---- HUB (track chooser) ---- */
+function goToHub(){
+ state.route='hub';state.track=null;state.showingDivider=false;
+ renderHub();
+}
+function renderHub(){
+ setProg();
+ const anyAnswered=Object.keys(answers).length>0;
+ let html=`<div class="mast" style="padding-top:30px"><div class="kicker">Proposal Evaluation · Your Tracks</div><h1 style="font-size:clamp(28px,5vw,42px)">Choose where to start</h1><div class="sub" style="font-style:normal">Work through the tracks in any order. Each is a separate relationship — none stands in for another. Come back here between tracks; finish whenever you're ready.</div><div class="rule2"></div></div>`;
+ html+=`<div class="hub-grid">`;
+ TRACK_ORDER.forEach(id=>{
+  const t=TRACKS[id];
+  const st=trackState(id);
+  const disabled=(st==='soon');
+  const stateLabel={notstarted:'Not started',inprogress:'In progress',done:'Done',soon:'Coming soon'}[st];
+  const onclick=disabled?'':`onclick="enterTrack('${id}')"`;
+  const role=disabled?'':'role="button" tabindex="0"';
+  const keydown=disabled?'':`onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();enterTrack('${id}');}"`;
+  html+=`<div class="hub-card ${id}${disabled?' disabled':''}" ${onclick} ${role} ${keydown} aria-label="${t.label}${disabled?' (coming soon)':''}">`;
+  html+=`<div class="hc-badge">${t.badge}</div>`;
+  html+=`<div class="hc-name">${t.label}</div>`;
+  html+=`<div class="hc-blurb">${t.blurb}</div>`;
+  html+=`<span class="hc-state ${st}">${stateLabel}</span>`;
+  html+=`</div>`;
+ });
+ html+=`</div>`;
+ // "Your goals" affordance — revisit Step 0 from the hub without losing other
+ // state (selections live in `goals`, untouched by the track answers).
+ html+=`<div class="btn-row"><button class="btn btn-ghost" onclick="reviseGoals()">★&nbsp; Your goals (Step 0)</button><button class="btn btn-ghost" onclick="toIntro()">←&nbsp; Back to start</button><button class="btn btn-primary" id="summarybtn" ${anyAnswered?'':'disabled'} onclick="toSummary()">See my summary &nbsp;→</button></div>`;
+ if(!anyAnswered)html+=`<p class="meta-line">Answer at least one track to build your summary — or revisit your goals above.</p>`;
+ elHub.innerHTML=html;
+ show('screen-hub');
+}
+/* Revisit the Goals step from the hub (revisable; preserves track answers). */
+function reviseGoals(){state.cameFromHub=true;goToGoals();}
+function toIntro(){prog.style.display='none';state.route='intro';show('screen-intro');}
+function toSummary(){if(Object.keys(answers).length===0)return;renderSummary();}
+
+/* ---- TRACK walk ---- */
+function enterTrack(track){
+ if(!TRACKS[track]||TRACKS[track].questionIds.length===0)return;
+ state.route='track';state.track=track;state.pos=0;
+ renderDivider(track);
+}
+
+/* Track divider (replaces the old section divider; one per track). */
+function renderDivider(track){
+ const t=TRACKS[track];
+ state.showingDivider=true;
  setProg();
  let html=`<div class="sec-divider">`;
- html+=`<div class="sec-eyebrow" style="color:${secKey==='crown'?'var(--sky)':'var(--clay)'}">${s.eyebrow}</div>`;
- html+=`<div class="sec-track-badge ${s.track}">${s.badge}</div>`;
- html+=`<h2>${s.title}</h2>`;
- html+=`<p class="sec-blurb">${s.blurb}</p>`;
+ html+=`<div class="sec-eyebrow" style="color:${dividerColor(track)}">${t.label}</div>`;
+ html+=`<div class="sec-track-badge ${t.color}">${t.badge}</div>`;
+ html+=`<h2>${t.label}</h2>`;
+ html+=`<p class="sec-blurb">${t.blurb}</p>`;
  html+=`<div class="sec-rule"></div>`;
- html+=`<div class="btn-row"><button class="btn btn-ghost" onclick="back()">←&nbsp; Back</button><button class="btn btn-primary" onclick="enterSection()">Start this section &nbsp;→</button></div>`;
+ html+=`<div class="btn-row"><button class="btn btn-ghost" onclick="goToHub()">←&nbsp; Back to hub</button><button class="btn btn-primary" onclick="enterSection()">Start this track &nbsp;→</button></div>`;
  html+=`</div>`;
  elQ.innerHTML=html;
  show('screen-q');
 }
-function enterSection(){showingDivider=false;renderQ();}
+function dividerColor(track){
+ return {crownProv:'var(--sky)',crownFed:'var(--moss-deep)',mou:'#8a6a20',iba:'var(--clay)'}[track]||'var(--clay)';
+}
+function enterSection(){state.showingDivider=false;state.pos=0;renderQ();}
+
+/* goto: move to position `pos` within the active track's resolved list. */
+function goto(pos){state.pos=pos;state.showingDivider=false;renderQ();}
 
 function renderQ(){
- const q=Q[cur];
- showingDivider=false;
+ const list=resolveTrack(state.track);
+ const q=list[state.pos];
+ state.showingDivider=false;
  setProg();
  const tagClass=q.priority?'priority':(q.track||'');
- let html=`<div class="qhead"><span class="qnum">${q.num}</span><span class="qtag ${tagClass}">${q.tag}</span></div>`;
+ // Display the number by POSITION in the resolved track list (DL-0021 displayNum),
+ // not the static per-home-track `q.num`. The shared Crown foundation (homed on
+ // crownProv as Question 1/2) thus re-numbers per track, and Crown-Federal reads
+ // Question 1–4 continuously instead of 1,2,1,2 (the federal-only questions carry
+ // their own per-track num:"Question 1"/"Question 2"). Branch children are spliced
+ // in after their parent, so position still reflects what the reader sees. The
+ // static `q.num` is retained on the data objects for the checker's per-home-track
+ // numbering validation — only the rendered eyebrow uses the position.
+ const displayNum='Question '+(state.pos+1);
+ let html=`<div class="qhead"><span class="qnum">${displayNum}</span><span class="qtag ${tagClass}">${q.tag}</span></div>`;
  const infoBtn=DETAILS[q.id]?`<button class="q-info" onclick="openDetail('${q.id}')" aria-label="More context and sources" title="More context and sources">i</button>`:'';
  html+=`<h2 class="q-title">${q.title}${infoBtn}</h2>`;
  html+=`<p class="q-why">${q.why}</p>`;
+ // Substantive options first; the status group (noOffer/notDiscussed/notSure,
+ // and na where eligible) renders as a visually distinct band beneath them
+ // (D3/D9). Both flow through the same pick()/answers machinery.
+ const subOpts=q.opts.filter(o=>!o.status);
+ const statusOpts=q.opts.filter(o=>o.status);
  html+=`<div class="opts">`;
- q.opts.forEach(o=>{
+ subOpts.forEach(o=>{
   const sel=answers[q.id]===o.k?'sel':'';
   html+=`<div class="opt ${sel}" onclick="pick('${q.id}','${o.k}')"><div class="dot"></div><div class="otext"><div class="olabel">${o.label}</div><div class="odesc">${o.desc}</div></div></div>`;
  });
  html+=`</div>`;
+ if(statusOpts.length){
+  // The group header adapts: na-eligible questions can be "not applicable", the
+  // rest are purely "can't answer yet" cases.
+  const statusHeading=q.naEligible?"If this doesn't apply, or you can't answer yet":"If you can't answer yet";
+  html+=`<div class="opts-status"><span class="status-label">${statusHeading}</span>`;
+  statusOpts.forEach(o=>{
+   const sel=answers[q.id]===o.k?'sel':'';
+   html+=`<div class="opt status ${sel}" onclick="pick('${q.id}','${o.k}')"><div class="dot"></div><div class="otext"><div class="olabel">${o.label}</div><div class="odesc">${o.desc}</div></div></div>`;
+  });
+  html+=`</div>`;
+ }
  html+=`<div class="btn-row">`;
  html+=`<button class="btn btn-ghost" onclick="back()">←&nbsp; Back</button>`;
- const last=cur===Q.length-1;
- html+=`<button class="btn btn-primary" id="nextbtn" ${answers[q.id]?'':'disabled'} onclick="next()">${last?'See my summary &nbsp;→':'Next &nbsp;→'}</button>`;
+ const last=state.pos===list.length-1;
+ html+=`<button class="btn btn-primary" id="nextbtn" ${answers[q.id]?'':'disabled'} onclick="next()">${last?'Done — back to hub &nbsp;→':'Next &nbsp;→'}</button>`;
  html+=`</div>`;
  elQ.innerHTML=html;
  show('screen-q');
  bindGloss();
 }
 
-function pick(qid,k){answers[qid]=k;renderQ();}
-function next(){if(!answers[Q[cur].id])return;if(cur<Q.length-1){goto(cur+1,true);}else{renderSummary();}}
-function back(){
- if(showingDivider){
-  if(cur===0){prog.style.display='none';show('screen-intro');}
-  else{goto(cur-1,false);}
- } else if(cur===0){
-  renderDivider(Q[0].section);
- } else if(Q[cur].section!==Q[cur-1].section){
-  renderDivider(Q[cur].section);
- } else {
-  goto(cur-1,false);
- }
+/* pick (A4 / DL-0022): record the answer; if the previous answer had revealed
+   branch children that the new answer no longer reveals, clear those children's
+   answers (deselect cleanup). renderQ re-runs resolveTrack — which re-injects or
+   drops the branch children — and setProg recomputes progress over the new list. */
+function pick(qid,k){
+ const q=QBYID[qid];
+ const prevK=answers[qid];
+ answers[qid]=k;
+ if(q)pruneReveals(q,prevK);
+ renderQ();
 }
 
-/* ---------- SUMMARY ---------- */
+/* next(): advance within the track; past the last question, return to the HUB
+   (not the summary — the summary is reached from the hub). */
+function next(){
+ const list=resolveTrack(state.track);
+ const q=list[state.pos];
+ if(!answers[q.id])return;
+ if(state.pos<list.length-1){goto(state.pos+1);}
+ else{goToHub();}
+}
+
+/* back(): step back within the track, to the divider, then out to the hub. */
+function back(){
+ if(state.showingDivider){goToHub();return;}
+ if(state.pos===0){renderDivider(state.track);}
+ else{goto(state.pos-1);}
+}
+
+/* ---------- SUMMARY ----------
+   Regrouped into four track blocks driven by TRACK_ORDER (A8), plus the
+   priority block and the consolidated checklist. Only ANSWERED questions
+   produce rows, so partially-completed tracks and the empty MOU track are
+   tolerated gracefully (a track with no answered rows is simply omitted).
+   `na` rows (D3/D9) render greyed and are EXCLUDED from the strong/watch/gap
+   counts AND the headline thresholds (N/A never inflates or deflates the
+   headline) and are omitted from the "What to ask for" checklist. The Goals
+   scorecard axis (Phase 7; A8/D8/D10) renders ABOVE the per-question blocks —
+   proposal band vs the Nation's aspiration/minimum per principle, with the
+   honesty rule for principles the 20 questions don't cover — followed by the
+   stage-keyed "When to revisit this" re-survey milestones (D5). */
 function renderSummary(){
+ state.route='summary';
  pfill.style.width='100%';pcount.textContent='Summary';
  const today=new Date().toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'});
- const rows=Q.map(q=>{const r=RULES[q.id][answers[q.id]];return{...r,priority:q.priority,id:q.id,track:q.track};});
+ // Rows for answered questions only (in array order, by track).
+ const rows=Q.filter(q=>answers[q.id]&&RULES[q.id]&&RULES[q.id][answers[q.id]])
+              .map(q=>{const r=RULES[q.id][answers[q.id]];return{...r,priority:q.priority,id:q.id,track:q.track};});
+ // Headline counts: strong/watch/gap only. `na` rows are deliberately NOT
+ // counted here — they are excluded from scoring (D3/D9), so they can neither
+ // inflate nor deflate the headline below. An na-row's flag is the distinct
+ // value 'na', so each filter naturally drops it.
  const gaps=rows.filter(r=>r.flag==='gap').length;
  const watch=rows.filter(r=>r.flag==='watch').length;
  const strong=rows.filter(r=>r.flag==='strong').length;
+ const naCount=rows.filter(r=>r.flag==='na').length;
 
  let head;
  if(gaps>=3) head="This proposal has several significant gaps to address before proceeding.";
@@ -736,37 +1617,54 @@ function renderSummary(){
 
  let html=`<div class="mast" style="padding-top:30px"><div class="kicker">Proposal Evaluation · Summary</div><h1 style="font-size:clamp(28px,5vw,42px)">Where This Proposal Stands</h1><div class="sub" style="font-style:normal">${head}</div><div class="rule2"></div></div>`;
 
- html+=`<p class="meta-line no-print" style="margin:18px 0 0">Generated ${today} · ${strong} strength${strong!==1?'s':''}, ${watch} to strengthen, ${gaps} gap${gaps!==1?'s':''} flagged</p>`;
+ html+=`<p class="meta-line no-print" style="margin:18px 0 0">Generated ${today} · ${strong} strength${strong!==1?'s':''}, ${watch} to strengthen, ${gaps} gap${gaps!==1?'s':''} flagged${naCount?` · ${naCount} not applicable (not scored)`:''}</p>`;
 
- // priority first, then grouped by track
+ // ---- Goals scorecard axis (A8/D8/D10): proposal band vs the Nation's
+ // aspiration + minimum bands, for each of the 8 principles, ABOVE the
+ // per-question blocks. Rendered first so the goals frame the detail below.
+ // (It recomputes each principle's band from `answers`/RULES directly — the same
+ // strong/watch/gap flags `rows` is built from — so na answers are naturally
+ // skipped, consistent with the per-question blocks.) ----
+ html+=goalsScorecardHtml();
+
+ // Priority block first, then one block per track (in TRACK_ORDER), skipping
+ // empty tracks. The Crown shared foundation (rights, consult) is homed on a
+ // single Q object (track:"crownProv"), so each renders as ONE row under its home
+ // track — asked in both Crown tracks during the walk, but answered once by id
+ // and shown once here (DL-0025).
  const pr=rows.filter(r=>r.priority);
- const crownRows=rows.filter(r=>r.track==='crown'&&!r.priority);
- const companyRows=rows.filter(r=>r.track==='company'&&!r.priority);
+ if(pr.length){
+  html+=`<div class="sum-block"><div class="sb-head">⚑ &nbsp;Priority — review with counsel first</div>`;
+  pr.forEach(r=>{html+=rowHtml(r);});
+  html+=`</div>`;
+ }
 
- html+=`<div class="sum-block"><div class="sb-head">⚑ &nbsp;Priority — review with counsel first</div>`;
- pr.forEach(r=>{html+=rowHtml(r);});
- html+=`</div>`;
-
- html+=`<div class="sum-block"><div class="sb-head" style="background:var(--sky)">Track 1 · The Crown — government's duties to you</div>`;
- crownRows.forEach(r=>{html+=rowHtml(r);});
- html+=`</div>`;
-
- html+=`<div class="sum-block"><div class="sb-head" style="background:var(--clay)">Track 2 · The Company — your deal (IBA)</div>`;
- companyRows.forEach(r=>{html+=rowHtml(r);});
- html+=`</div>`;
+ TRACK_ORDER.forEach(tid=>{
+  const t=TRACKS[tid];
+  const trackRows=rows.filter(r=>r.track===tid&&!r.priority);
+  if(trackRows.length===0)return;          // omit empty / unanswered tracks
+  html+=`<div class="sum-block"><div class="sb-head" style="background:${dividerColor(tid)}">${t.label}</div>`;
+  trackRows.forEach(r=>{html+=rowHtml(r);});
+  html+=`</div>`;
+ });
 
  // consolidated asks
  html+=`<div class="sum-tag" style="margin-top:34px">Take this into the room</div>`;
  html+=`<div class="sum-block"><div class="sb-head">What to ask for — checklist</div>`;
- rows.forEach((r,i)=>{
+ // The checklist omits `na` rows entirely — a not-applicable criterion has
+ // nothing to ask for (D3/D9). Only strong/watch/gap rows produce a checklist item.
+ rows.filter(r=>r.flag!=='na').forEach(r=>{
   const fl=r.flag==='gap'?'gap':r.flag==='watch'?'watch':'strong';
   html+=`<div class="sum-row"><div class="sr-crit"><span class="flag ${fl}">${r.flag==='gap'?'Gap':r.flag==='watch'?'Strengthen':'Hold'}</span>${r.crit}</div><div class="sr-ask" style="border-left-color:${r.flag==='gap'?'var(--rust)':r.flag==='watch'?'var(--gold)':'var(--moss)'}">${r.ask}</div></div>`;
  });
  html+=`</div>`;
 
- html+=`<div class="disclaim"><strong>Before you rely on this:</strong> This summary is a starting point for discussion, not legal advice. The priority items — your rights and title, closure, bankruptcy, the legal effect of consent — turn on specific facts and on law that is changing quickly in BC (DRIPA, the 2025 Gitxaala ruling, cumulative-effects doctrine, and mine bonding are all in flux). Take this checklist to qualified Indigenous-law and mining-law counsel and to your own independent technical and financial advisors. Remember the two tracks: a company IBA never replaces the government's duty to consult, your role in the assessment, Crown revenue sharing, or your Nation's own consent decision.</div>`;
+ // ---- "When to revisit this" — stage-keyed re-survey milestones (D5) ----
+ html+=revisitMilestonesHtml();
 
- html+=`<div class="btn-row no-print"><button class="btn btn-primary" onclick="window.print()">⎙ &nbsp;Print or save as PDF</button><button class="btn btn-ghost" onclick="restart()">↺ &nbsp;Start over</button></div>`;
+ html+=`<div class="disclaim"><strong>Before you rely on this:</strong> This summary is a starting point for discussion, not legal advice. The priority items — your rights and title, closure, bankruptcy, the legal effect of consent — turn on specific facts and on law that is changing quickly in BC (DRIPA, the 2025 Gitxaala ruling, cumulative-effects doctrine, and mine bonding are all in flux). Take this checklist to qualified Indigenous-law and mining-law counsel and to your own independent technical and financial advisors. Remember the separate tracks: a company IBA never replaces the government's duty to consult, your role in the assessment, Crown revenue sharing, or your Nation's own consent decision.</div>`;
+
+ html+=`<div class="btn-row no-print"><button class="btn btn-primary" onclick="window.print()">⎙ &nbsp;Print or save as PDF</button><button class="btn btn-ghost" onclick="goToHub()">←&nbsp; Back to hub</button><button class="btn btn-ghost" onclick="restart()">↺ &nbsp;Start over</button></div>`;
  html+=`<p class="meta-line no-print">Tip: in the print dialog, choose "Save as PDF" to keep or email this summary.</p>`;
 
  elSum.innerHTML=html;
@@ -774,15 +1672,187 @@ function renderSummary(){
  bindGloss();
 }
 
-function rowHtml(r){
- const fl=r.flag==='gap'?'gap':r.flag==='watch'?'watch':'strong';
- const lab=r.flag==='gap'?'Gap':r.flag==='watch'?'Strengthen':'Strength';
- const has=DETAILS[r.id]?'has-detail':'';
- const cue=DETAILS[r.id]?`<span class="row-more">Learn more &rsaquo;</span>`:'';
- return `<div class="sum-row ${has}" ${DETAILS[r.id]?`onclick="openDetail('${r.id}')" role="button" tabindex="0"`:''}><div class="sr-crit"><span class="flag ${fl}">${lab}</span>${r.crit}${cue}</div><div class="sr-your">${r.your}</div></div>`;
+/* ---------- GOALS SCORECARD (A8/D8/D10) ----------
+   For each of the 8 principles, derive the proposal's evaluated band from the
+   answers of the questions mapped to it (PRINCIPLE_MAP), then compare it against
+   the Nation's aspiration + minimum bands (goals.principles[pid]) and render the
+   three-band verdict (above aspiration / acceptable / below walk-away). Principles
+   the tool's questions don't cover are shown honestly as "not assessed". Custom
+   goals are an unscored checklist. Each principle's band is computed from `answers`
+   + RULES (via principleProposalBand), the same flags the per-question rows use, so
+   na answers are naturally skipped. */
+/* Compute a principle's proposal band (worst-of its mapped, answered, non-na
+   questions). Returns a band string (green|amber|red) or null if none answered. */
+function principleProposalBand(pid){
+ const m=PRINCIPLE_MAP[pid];
+ if(!m||!m.questions)return null;
+ let worst=null;
+ m.questions.forEach(qid=>{
+  const a=answers[qid];
+  if(!a)return;
+  const r=RULES[qid]&&RULES[qid][a];
+  if(!r)return;
+  const band=FLAG_TO_BAND[r.flag];      // strong/watch/gap -> green/amber/red; na -> undefined (skipped)
+  if(!band)return;                      // na (or any non-scoring flag) is set aside
+  if(worst===null||BAND_RANK[band]>BAND_RANK[worst])worst=band;
+ });
+ return worst;
+}
+/* The three-band verdict comparing a proposal band against the Nation's set
+   aspiration + minimum. Returns {key, label}. Bands rank green(0)<amber(1)<red(2);
+   a LOWER rank is stronger. "Above aspiration" = proposal meets/exceeds the
+   aspiration; "below walk-away" = proposal is worse than the minimum the Nation
+   said it would accept (a deal-breaker); "acceptable" sits between the two. */
+function bandVerdict(proposal,aspiration,minimum){
+ if(!proposal)return {key:'unscored',label:'No mapped answer yet'};
+ const p=BAND_RANK[proposal];
+ // If the Nation set neither band for this principle, we can't place it.
+ if(!aspiration&&!minimum)return {key:'unscored',label:'No goal set'};
+ if(aspiration&&p<=BAND_RANK[aspiration])return {key:'above',label:'Meets your aspiration'};
+ if(minimum&&p>BAND_RANK[minimum])return {key:'below',label:'Below your walk-away point'};
+ // Between the two (or only one band set and the proposal clears it). When both
+ // bands are set the wording names the range; with only one set it's plainly
+ // "acceptable" against the band that was set.
+ const between=aspiration&&minimum;
+ return {key:'acceptable',label:between?'Acceptable — between aspiration and walk-away':'Acceptable against your goal'};
+}
+function goalsScorecardHtml(){
+ const G=goals.principles||{};
+ let html=`<div class="sum-tag" style="margin-top:8px">Scored against your goals</div>`;
+ html+=`<div class="score-block"><div class="sb-head">★ &nbsp;Goals scorecard — the proposal vs what you set out to achieve</div>`;
+ html+=`<p class="score-intro">For each principle you set a goal on, this compares the proposal's standing (drawn from your track answers) against the band you're <strong>aspiring</strong> to and the one you're <strong>willing to settle for</strong>. Where the tool's questions don't reach a principle, it says so plainly rather than guess.</p>`;
+ GOALS.principles.forEach(p=>{
+  const m=PRINCIPLE_MAP[p.id]||{};
+  const sel=G[p.id]||{};
+  if(m.notAssessed){
+   // Honesty rule: no fabricated proposal band. Show the Nation's goal (if set)
+   // and mark the proposal side "not assessed by this tool — evaluate separately".
+   html+=`<div class="score-row notassessed"><div class="scr-top"><span class="scr-name">${p.n}. ${p.title}</span><span class="verdict unscored">Not assessed by this tool</span></div>`;
+   html+=`<div class="scr-detail">${goalBandsDetail(sel)}</div>`;
+   html+=`<div class="scr-note">${m.notAssessed}</div></div>`;
+   return;
+  }
+  const proposal=principleProposalBand(p.id);
+  const v=bandVerdict(proposal,sel.aspiration,sel.minimum);
+  html+=`<div class="score-row"><div class="scr-top"><span class="scr-name">${p.n}. ${p.title}</span><span class="verdict ${v.key}">${v.label}</span></div>`;
+  html+=`<div class="scr-detail"><span class="scr-pair"><span class="scr-lab">Proposal</span> ${bandChip(proposal)}</span>${goalBandsDetail(sel)}</div>`;
+  html+=`</div>`;
+ });
+ // Cumulative-impact goal — unscored readout (D2/D4). The Nation's cumulative
+ // limit (and, where a limit was set, its "would you exceed it?" answer) is
+ // captured on the Goals step but has NO rubric to score against — so, like the
+ // custom-goals readout, it's echoed back in the Nation's own words rather than
+ // given a verdict. Cross-checked against the Crown track's `cumulative` question,
+ // which does the assessing; this just surfaces the goal the Nation set.
+ html+=cumulativeGoalReadoutHtml();
+ // Custom goals — unscored checklist (D10).
+ const customText=(goals.custom||'').trim();
+ if(customText){
+  const items=customText.split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  html+=`<div class="score-custom"><div class="scr-name">Your own goals</div><ul>`;
+  items.forEach(it=>{html+=`<li>${escAttr(it)}</li>`;});
+  html+=`</ul><p class="scr-note">These are carried as a reminder — the tool can't score them automatically. Check each against the proposal yourself.</p></div>`;
+ }
+ html+=`</div>`;
+ return html;
+}
+/* Unscored readout of the dedicated cumulative-impact goal (D2/D4). Echoes the
+   chosen limit in the Nation's own words (drawn from GOALS.cumulative option
+   labels), and — when a limit other than "none" was set — the exceed answer
+   (GOALS.cumExceed labels). Unset/none is handled gracefully ("not set" / no
+   exceed line). No verdict: there is no rubric, so it's surfaced like the custom
+   goals, not scored. */
+function cumulativeGoalReadoutHtml(){
+ const C=goals.cumulative||{};
+ const limitOpt=GOALS.cumulative.opts.find(o=>o.k===C.limit);
+ // Rendered inside a `.score-custom` block (NOT a `.score-row .scr-detail`), so it
+ // reuses the same `.score-custom .scr-name`/`li`/`.scr-note` styling the custom-
+ // goals readout uses — each line is a list item with a bold lead-in label.
+ const notSet=`<em style="color:var(--ink-soft)">not set</em>`;
+ let html=`<div class="score-custom"><div class="scr-name">${GOALS.cumulative.title}</div>`;
+ if(!limitOpt){
+  html+=`<ul><li><strong>Your limit:</strong> ${notSet}</li></ul>`;
+  html+=`<p class="scr-note">No cumulative-impact limit was set on the Goals step. Setting one — a threshold the total build-up of development shouldn't cross — lets a proposal be weighed against it, not just on its own. See the Crown — Provincial track on cumulative effects.</p></div>`;
+  return html;
+ }
+ html+=`<ul><li><strong>Your limit:</strong> ${limitOpt.label}</li>`;
+ // The exceed follow-up only applies when a real limit (firm/directional) was set
+ // — the "none" option carries no `reveals`, so there is no exceed answer to show.
+ if(limitOpt.reveals&&limitOpt.reveals.includes('cumExceed')){
+  const exOpt=GOALS.cumExceed.opts.find(o=>o.k===C.exceed);
+  const exText=exOpt?exOpt.label:notSet;
+  html+=`<li><strong>Would you exceed it for an extraordinary opportunity?</strong> ${exText}</li>`;
+ }
+ html+=`</ul>`;
+ html+=`<p class="scr-note">This is the limit your Nation set on the total build-up of development — carried as a reminder. The Crown — Provincial track's cumulative-effects question is where a specific proposal gets weighed against it.</p></div>`;
+ return html;
+}
+/* A small band chip (green/amber/red, or a muted "—" when unset). */
+function bandChip(band){
+ if(!band)return `<span class="bandchip none">—</span>`;
+ const lab={green:'Green',amber:'Amber',red:'Red'}[band]||band;
+ return `<span class="bandchip ${band}">${lab}</span>`;
+}
+/* The aspiration + minimum chips for a principle's selected goal (or a muted note
+   when the Nation set neither). */
+function goalBandsDetail(sel){
+ if(!sel.aspiration&&!sel.minimum)return `<span class="scr-pair"><span class="scr-lab">Your goal</span> <span style="font-style:italic;color:var(--ink-soft)">not set</span></span>`;
+ let h='';
+ h+=`<span class="scr-pair"><span class="scr-lab">Aspiring to</span> ${bandChip(sel.aspiration)}</span>`;
+ h+=`<span class="scr-pair"><span class="scr-lab">Settle for</span> ${bandChip(sel.minimum)}</span>`;
+ return h;
 }
 
-function restart(){cur=0;Object.keys(answers).forEach(k=>delete answers[k]);prog.style.display='none';show('screen-intro');}
+/* ---------- RE-SURVEY MILESTONES (D5) ----------
+   "When to revisit this", keyed to the stage answer (Q5/iba `stage`). Each
+   milestone follows one or more stages; the NEXT relevant milestone(s) for where
+   the Nation currently is are highlighted. Milestones already behind the Nation
+   (their stage has passed) are still listed, but as context, not "next". */
+function revisitMilestonesHtml(){
+ const stage=answers.stage||null;       // Q5 answer key, or null if not answered
+ const stageOrder=['early','govreview','ea','negotiating','operating'];
+ const stageIdx=stage?stageOrder.indexOf(stage):-1;
+ const stageLabel={early:'early (exploration / first contact)',govreview:'government review and approval',ea:'environmental assessment',negotiating:'negotiating terms',operating:'operating or expanding'}[stage];
+ // A milestone is "next" (upcoming and most relevant) when the current stage is in
+ // its `after` set: i.e. the milestone follows where the Nation is right now.
+ const isNext=ms=>stage&&ms.after.includes(stage);
+ let html=`<div class="sum-tag" style="margin-top:34px">Keep this current</div>`;
+ html+=`<div class="revisit-block"><div class="sb-head">⟳ &nbsp;When to revisit this</div>`;
+ if(stage){
+  html+=`<p class="revisit-intro">A proposal isn't a one-time decision. You told us this project is at the <strong>${stageLabel}</strong> stage — the milestones flagged <span style="color:var(--clay);font-weight:600">Next</span> below are the ones coming up for you. Re-run this tool at each, because your leverage and the open questions change as the project moves.</p>`;
+ }else{
+  html+=`<p class="revisit-intro">A proposal isn't a one-time decision — re-run this tool at each milestone below, because your leverage and the open questions change as the project moves. (Set the project's stage on the Company track to see which milestone is next for you.)</p>`;
+ }
+ MILESTONES.forEach(ms=>{
+  const next=isNext(ms);
+  // Mark as "passed" if every stage it follows is behind the current stage AND it
+  // isn't the recurring periodic check.
+  const allAfterPassed=stageIdx>=0&&!ms.periodic&&ms.after.every(s=>stageOrder.indexOf(s)<stageIdx);
+  const mark=ms.periodic?'Ongoing':(next?'Next':(allAfterPassed?'Done?':'Ahead'));
+  html+=`<div class="milestone${next?' next':''}"><div class="ms-mark">${mark}</div><div class="ms-body"><div class="ms-title">${ms.title}${next?'<span class="ms-next-tag">← next for you</span>':''}</div><p>${ms.body}</p></div></div>`;
+ });
+ html+=`</div>`;
+ return html;
+}
+
+/* A summary row. `na` rows (D3/D9) render greyed (the .na class) with an "N/A"
+   flag and are EXCLUDED from the headline counts upstream — they're shown so the
+   user sees the criterion was set aside, never scored as a strength or gap. */
+function rowHtml(r){
+ const fl=r.flag==='gap'?'gap':r.flag==='watch'?'watch':r.flag==='na'?'na':'strong';
+ const lab=r.flag==='gap'?'Gap':r.flag==='watch'?'Strengthen':r.flag==='na'?'N/A':'Strength';
+ const naClass=r.flag==='na'?' na':'';
+ const has=DETAILS[r.id]?'has-detail':'';
+ const cue=DETAILS[r.id]?`<span class="row-more">Learn more &rsaquo;</span>`:'';
+ return `<div class="sum-row${naClass} ${has}" ${DETAILS[r.id]?`onclick="openDetail('${r.id}')" role="button" tabindex="0"`:''}><div class="sr-crit"><span class="flag ${fl}">${lab}</span>${r.crit}${cue}</div><div class="sr-your">${r.your}</div></div>`;
+}
+
+function restart(){
+ Object.keys(answers).forEach(k=>delete answers[k]);
+ Object.keys(goals).forEach(k=>delete goals[k]);
+ state.route='intro';state.track=null;state.pos=0;state.showingDivider=false;state.cameFromHub=false;
+ prog.style.display='none';show('screen-intro');
+}
 
 /* ---------- DETAIL PANEL ---------- */
 const dPanel=document.getElementById('detailPanel');
