@@ -40,7 +40,7 @@ body{
 .wrap{max-width:860px;margin:0 auto;padding:0 22px 80px}
 
 /* ---- masthead ---- */
-.mast{padding:46px 0 30px;border-bottom:2.5px solid var(--ink);margin-bottom:4px;position:relative}
+.mast{padding:46px 0 30px;border-bottom:2.5px solid var(--ink);margin-bottom:4px;position:relative;text-align:center}
 .mast .kicker{font-family:'Fraunces',serif;text-transform:uppercase;letter-spacing:.32em;font-size:11.5px;font-weight:600;color:var(--clay);margin-bottom:16px}
 .mast h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(31px,5.6vw,50px);line-height:1.02;letter-spacing:-.015em;color:var(--ink);margin-bottom:14px}
 .mast .sub{font-size:18px;color:var(--ink-soft);max-width:600px;font-style:italic}
@@ -287,8 +287,7 @@ footer{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-si
 
 /* ---- hub screen (route between Goals and the tracks) ---- */
 .hub-intro{font-size:19px;color:var(--ink-soft);margin-bottom:8px;max-width:660px}
-.hub-mast{text-align:center}
-.hub-mast .sub{margin-left:auto;margin-right:auto;text-align:left}
+.mast .sub{margin-left:auto;margin-right:auto;text-align:left}
 .hub-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:28px 0 6px}
 .hub-card{border:1.5px solid var(--line);background:var(--paper-card);border-radius:3px;padding:20px 22px;text-align:left;cursor:pointer;transition:border-color .18s,transform .12s,box-shadow .15s;display:flex;flex-direction:column;gap:6px;position:relative}
 .hub-card:hover{transform:translateY(-2px);box-shadow:3px 3px 0 var(--ink)}
@@ -1442,7 +1441,7 @@ function goToHub(){
 function renderHub(){
  setProg();
  const anyAnswered=Object.keys(answers).length>0;
- let html=`<div class="mast hub-mast" style="padding-top:30px"><div class="kicker">Proposal Evaluation · Your Tracks</div><h1 style="font-size:clamp(28px,5vw,42px)">Choose where to start</h1><div class="sub" style="font-style:normal">Work through the tracks in any order. Each is a separate relationship — none stands in for another. Come back here between tracks; finish whenever you're ready.</div><div class="rule2"></div></div>`;
+ let html=`<div class="mast" style="padding-top:30px"><div class="kicker">Proposal Evaluation · Your Tracks</div><h1 style="font-size:clamp(28px,5vw,42px)">Choose where to start</h1><div class="sub" style="font-style:normal">Work through the tracks in any order. Each is a separate relationship — none stands in for another. Come back here between tracks; finish whenever you're ready.</div><div class="rule2"></div></div>`;
  html+=`<div class="hub-grid">`;
  TRACK_ORDER.forEach(id=>{
   const t=TRACKS[id];
